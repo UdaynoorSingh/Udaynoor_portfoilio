@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useSpaceAmbient } from '../context/SpaceAmbientContext'
 
 const links = [
   { label: 'ABOUT', href: '#about' },
@@ -9,6 +10,35 @@ const links = [
   { label: 'ACHIEVEMENTS', href: '#achievements' },
   { label: 'CONTACT', href: '#contact' },
 ]
+
+function AmbientAudioToggle() {
+  const { muted, toggleMuted } = useSpaceAmbient()
+  return (
+    <button
+      type="button"
+      onClick={toggleMuted}
+      className="interactive ambient-nav-toggle"
+      aria-label={muted ? 'Unmute ambient space audio' : 'Mute ambient space audio'}
+      aria-pressed={!muted}
+      title={muted ? 'Unmute audio' : 'Mute audio'}
+    >
+      <span className="ambient-nav-toggle__icon" aria-hidden>
+        {muted ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M11 5L6 9H2v6h4l5 4V5z" />
+            <line x1="23" y1="9" x2="17" y2="15" />
+            <line x1="17" y1="9" x2="23" y2="15" />
+          </svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M11 5L6 9H2v6h4l5 4V5z" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+          </svg>
+        )}
+      </span>
+    </button>
+  )
+}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -97,6 +127,9 @@ export default function Navbar() {
           })}
         </div>
 
+        <div className="flex shrink-0 items-center gap-1 md:gap-2">
+        <AmbientAudioToggle />
+
         {/* Mobile hamburger */}
         <button
           className="md:hidden flex shrink-0 flex-col gap-1 p-2 interactive"
@@ -119,6 +152,7 @@ export default function Navbar() {
             transition: 'transform 0.3s ease',
           }} />
         </button>
+        </div>
         </div>
       </motion.nav>
 

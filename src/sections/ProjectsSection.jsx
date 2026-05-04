@@ -1,9 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
 import TiltCard from '../components/TiltCard'
 import MagneticButton from '../components/MagneticButton'
 
-const projects = [
+const defaultProjects = [
   {
     title: 'Bug Tracker',
     description: 'Full-featured bug tracking system with priority queues, status workflows, team collaboration, and CI/CD deployment.',
@@ -135,6 +135,25 @@ function ProjectCard({ project, index }) {
 export default function ProjectsSection() {
   const ref = useRef()
   const inView = useInView(ref, { once: true, margin: '-100px' })
+  const [projects, setProjects] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/projects/', { credentials: 'same-origin' })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((data) => {
+        const list = Array.isArray(data.results) ? data.results : []
+        if (!cancelled) setProjects(list)
+      })
+      .catch(() => {
+        if (!cancelled) setProjects(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const displayProjects = projects === null ? defaultProjects : projects
 
   return (
     <section id="projects" className="section-padding relative" style={{ zIndex: 1 }} ref={ref}>
@@ -180,8 +199,8 @@ export default function ProjectsSection() {
         <div className="section-divider section-divider--wide mt-10 mb-14" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((p, i) => (
-            <ProjectCard key={p.title} project={p} index={i} />
+          {displayProjects.map((p, i) => (
+            <ProjectCard key={`${p.title}-${i}`} project={p} index={i} />
           ))}
         </div>
       </div>

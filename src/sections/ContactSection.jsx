@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import BlackHole from '../components/BlackHole'
+import { getCsrfToken } from '../utils/csrf'
 
 const links = [
   { label: 'noor2022singh@gmail.com', href: 'mailto:noor2022singh@gmail.com', prefix: 'email' },
@@ -54,6 +55,37 @@ export default function ContactSection() {
   const ref = useRef()
   const inView = useInView(ref, { once: true, margin: '-100px' })
   const [blackHoleOn, setBlackHoleOn] = useState(false)
+  const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const [formStatus, setFormStatus] = useState(null)
+
+  const handleContactSubmit = async (e) => {
+    e.preventDefault()
+    setFormStatus('sending')
+    try {
+      const res = await fetch('/api/contact/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCsrfToken(),
+        },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim(),
+          message: form.message.trim(),
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.ok && data.ok) {
+        setFormStatus('ok')
+        setForm({ name: '', email: '', message: '' })
+      } else {
+        setFormStatus('error')
+      }
+    } catch {
+      setFormStatus('error')
+    }
+  }
 
   return (
     <section id="contact" className="relative w-full overflow-hidden" style={{ zIndex: 1, minHeight: '100vh', display: 'flex', alignItems: 'center' }} ref={ref}>
@@ -138,6 +170,75 @@ export default function ContactSection() {
               />
             ))}
           </motion.div>
+
+          <motion.form
+            onSubmit={handleContactSubmit}
+            className="glass-card mx-auto mt-10 max-w-[640px] w-full text-left interactive"
+            style={{ padding: '28px clamp(20px,4vw,32px)', borderRadius: '14px', background: 'rgba(6, 8, 16, 0.82)' }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.55, duration: 0.5 }}
+          >
+            <p className="font-mono mb-5" style={{ fontSize: '0.65rem', letterSpacing: '0.2em', color: 'var(--color-accent-secondary)' }}>
+              MESSAGE — POST /api/contact/
+            </p>
+            <div className="flex flex-col gap-4">
+              <label className="font-mono block" style={{ fontSize: '0.65rem', letterSpacing: '2px', color: 'var(--color-text-muted)' }}>
+                NAME
+                <input
+                  required
+                  type="text"
+                  name="name"
+                  value={form.name}
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  className="mt-2 w-full rounded border border-white/15 bg-white/[0.04] px-3 py-2.5 font-dm text-sm text-white outline-none transition-colors focus:border-[var(--color-accent)]/50"
+                  autoComplete="name"
+                />
+              </label>
+              <label className="font-mono block" style={{ fontSize: '0.65rem', letterSpacing: '2px', color: 'var(--color-text-muted)' }}>
+                EMAIL
+                <input
+                  required
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                  className="mt-2 w-full rounded border border-white/15 bg-white/[0.04] px-3 py-2.5 font-dm text-sm text-white outline-none transition-colors focus:border-[var(--color-accent)]/50"
+                  autoComplete="email"
+                />
+              </label>
+              <label className="font-mono block" style={{ fontSize: '0.65rem', letterSpacing: '2px', color: 'var(--color-text-muted)' }}>
+                MESSAGE
+                <textarea
+                  required
+                  name="message"
+                  rows={4}
+                  value={form.message}
+                  onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+                  className="mt-2 w-full resize-y rounded border border-white/15 bg-white/[0.04] px-3 py-2.5 font-dm text-sm text-white outline-none transition-colors focus:border-[var(--color-accent)]/50"
+                />
+              </label>
+            </div>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <button
+                type="submit"
+                disabled={formStatus === 'sending'}
+                className="rounded border border-white/20 bg-white/[0.08] px-5 py-2.5 font-mono text-[0.65rem] tracking-[0.2em] text-white transition-colors hover:border-[var(--color-accent)]/60 hover:text-[var(--color-accent)] interactive disabled:opacity-50"
+              >
+                {formStatus === 'sending' ? 'SENDING…' : 'SEND'}
+              </button>
+              {formStatus === 'ok' && (
+                <span className="font-mono text-[0.65rem]" style={{ color: 'var(--color-accent)' }}>
+                  Sent. Thank you.
+                </span>
+              )}
+              {formStatus === 'error' && (
+                <span className="font-mono text-[0.65rem]" style={{ color: '#ff6b6b' }}>
+                  Could not send. Try email instead.
+                </span>
+              )}
+            </div>
+          </motion.form>
 
           {/* Footer */}
           <motion.div

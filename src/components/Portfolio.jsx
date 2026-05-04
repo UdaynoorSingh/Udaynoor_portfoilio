@@ -1,10 +1,12 @@
-import { Suspense, lazy, useEffect, useRef } from 'react'
+import { Suspense, lazy, useEffect, useRef, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import Background3D from './Background3D'
 import Navbar from './Navbar'
+import SceneLoadOverlay from './SceneLoadOverlay'
+import { SpaceAmbientProvider } from '../context/SpaceAmbientContext'
 import CursorFX from './CursorFX'
 import SectionThemeController from './SectionThemeController'
 import { AudioFX } from '../utils/AudioFX'
@@ -15,6 +17,7 @@ const HeroSection = lazy(() => import('../sections/HeroSection'))
 const AboutSection = lazy(() => import('../sections/AboutSection'))
 const TechMarqueeSection = lazy(() => import('../sections/TechMarqueeSection'))
 const ExperienceSection = lazy(() => import('../sections/ExperienceSection'))
+const LearNexusFeaturedSection = lazy(() => import('../sections/LearNexusFeaturedSection'))
 const ProjectsSection = lazy(() => import('../sections/ProjectsSection'))
 const RatingsSection = lazy(() => import('../sections/RatingsSection'))
 const AchievementsSection = lazy(() => import('../sections/AchievementsSection'))
@@ -29,7 +32,16 @@ const SectionLoader = () => (
 )
 
 export default function Portfolio() {
+  const [sceneTexturesReady, setSceneTexturesReady] = useState(false)
+  const onSceneTexturesReady = useCallback(() => {
+    setSceneTexturesReady(true)
+  }, [])
+
   const audioInitialized = useRef(false)
+
+  useEffect(() => {
+    fetch('/api/bootstrap/', { credentials: 'same-origin' }).catch(() => {})
+  }, [])
 
   useEffect(() => {
     // Initialize Lenis for smooth scrolling
@@ -92,8 +104,9 @@ export default function Portfolio() {
   }, [])
 
   return (
-    <>
-      <Background3D />
+    <SpaceAmbientProvider>
+      <SceneLoadOverlay ready={sceneTexturesReady} />
+      <Background3D onTexturesReady={onSceneTexturesReady} />
       <CursorFX />
       <SectionThemeController />
       <Navbar />
@@ -116,6 +129,9 @@ export default function Portfolio() {
           <ExperienceSection />
         </Suspense>
         <Suspense fallback={<SectionLoader />}>
+          <LearNexusFeaturedSection />
+        </Suspense>
+        <Suspense fallback={<SectionLoader />}>
           <ProjectsSection />
         </Suspense>
         <Suspense fallback={<SectionLoader />}>
@@ -128,6 +144,6 @@ export default function Portfolio() {
           <ContactSection />
         </Suspense>
       </motion.main>
-    </>
+    </SpaceAmbientProvider>
   )
 }

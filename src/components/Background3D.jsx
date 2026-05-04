@@ -1,6 +1,7 @@
-import { useRef, useMemo, useEffect } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { useRef, useMemo, useEffect, Suspense, useLayoutEffect } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { EffectComposer, Bloom, Noise, Vignette } from '@react-three/postprocessing'
+import { OrbitControls, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -92,94 +93,143 @@ function StarField({ count = 9000 }) {
   )
 }
 
-function OrbitalRings() {
-  const group = useRef()
-  const scrollData = useScrollProgress()
-
-  useFrame(({ clock }) => {
-    if (!group.current) return
-    const t = clock.getElapsedTime()
-    const p = scrollData.current.progress
-    group.current.rotation.z = t * 0.03
-    group.current.rotation.y = t * 0.08 + p * 1.4
-    group.current.position.y = Math.sin(t * 0.2) * 3.5
-  })
-
-  return (
-    <group ref={group} position={[28, 10, -65]}>
-      <mesh rotation={[Math.PI / 2.4, 0, 0]}>
-        <torusGeometry args={[12, 0.05, 24, 320]} />
-        <meshBasicMaterial color="#4dd9ff" transparent opacity={0.42} />
-      </mesh>
-      <mesh rotation={[Math.PI / 2.7, 0.4, 0.6]}>
-        <torusGeometry args={[18, 0.04, 24, 320]} />
-        <meshBasicMaterial color="#a068ff" transparent opacity={0.26} />
-      </mesh>
-      <mesh>
-        <icosahedronGeometry args={[2.1, 2]} />
-        <meshStandardMaterial color="#d8f2ff" emissive="#38d2ff" emissiveIntensity={0.6} metalness={0.35} roughness={0.2} wireframe />
-      </mesh>
-    </group>
-  )
+/** Shared unit sphere; scaled per planet. Disposed on teardown. */
+function useSharedPlanetGeometry() {
+  const geometry = useMemo(() => new THREE.SphereGeometry(1, 40, 40), [])
+  useEffect(() => () => geometry.dispose(), [geometry])
+  return geometry
 }
 
-function NebulaBlob({ position, color, speed = 1, scale = 1 }) {
-  const ref = useRef()
+function OrbitingPlanet({ map, orbitRadius, angularSpeed, radius, selfSpinSpeed, geometry }) {
+  const meshRef = useRef(null)
+  const mOrbit = useRef(new THREE.Matrix4())
+  const mTrans = useRef(new THREE.Matrix4())
+  const mSpin = useRef(new THREE.Matrix4())
+  const mScale = useRef(new THREE.Matrix4())
+  const mCompose = useRef(new THREE.Matrix4())
 
   useFrame(({ clock }) => {
-    if (!ref.current) return
-    const t = clock.getElapsedTime() * speed
-    ref.current.position.y = position[1] + Math.sin(t * 0.35) * 2
-    ref.current.rotation.z = t * 0.08
+    const mesh = meshRef.current
+    if (!mesh) return
+    const t = clock.getElapsedTime()
+    const orbitAngle = t * angularSpeed
+    const spinAngle = t * selfSpinSpeed
+    mOrbit.current.makeRotationY(orbitAngle)
+    mTrans.current.makeTranslation(orbitRadius, 0, 0)
+    mSpin.current.makeRotationY(spinAngle)
+    mScale.current.makeScale(radius, radius, radius)
+    mCompose.current
+      .copy(mOrbit.current)
+      .multiply(mTrans.current)
+      .multiply(mSpin.current)
+      .multiply(mScale.current)
+    mesh.matrix.copy(mCompose.current)
+    mesh.matrixWorldNeedsUpdate = true
   })
 
   return (
-    <mesh ref={ref} position={position} scale={scale}>
-      <sphereGeometry args={[9, 42, 42]} />
-      <meshBasicMaterial color={color} transparent opacity={0.085} />
+    <mesh ref={meshRef} geometry={geometry} matrixAutoUpdate={false}>
+      <meshStandardMaterial
+        map={map}
+        metalness={0.05}
+        roughness={0.92}
+      />
     </mesh>
   )
 }
 
-function CameraRig({ children }) {
-  const rig = useRef()
-  const target = useRef({ x: 0, y: 0 })
+function SolarSystemInner({ onTexturesReady }) {
+  const readyOnce = useRef(false)
+  const geometry = useSharedPlanetGeometry()
+  const gl = useThree((s) => s.gl)
+  const [mercuryMap, earthMap, marsMap, jupiterMap] = useTexture([
+    '/textures/mercury.jpg',
+    '/textures/earth.jpg',
+    '/textures/mars.jpg',
+    '/textures/jupiter.jpg',
+  ])
 
-  useEffect(() => {
-    const handler = (e) => {
-      target.current.x = (e.clientX / window.innerWidth - 0.5) * 1.5
-      target.current.y = -(e.clientY / window.innerHeight - 0.5) * 1.5
+  useLayoutEffect(() => {
+    const maxAniso = Math.min(8, gl.capabilities.getMaxAnisotropy())
+    for (const tex of [mercuryMap, earthMap, marsMap, jupiterMap]) {
+      tex.colorSpace = THREE.SRGBColorSpace
+      tex.anisotropy = maxAniso
+      tex.needsUpdate = true
     }
-    window.addEventListener('mousemove', handler, { passive: true })
-    return () => window.removeEventListener('mousemove', handler)
-  }, [])
+    if (!readyOnce.current) {
+      readyOnce.current = true
+      onTexturesReady?.()
+    }
+  }, [gl, mercuryMap, earthMap, marsMap, jupiterMap, onTexturesReady])
 
-  useFrame(() => {
-    if (!rig.current) return
-    rig.current.rotation.y += (target.current.x * 0.08 - rig.current.rotation.y) * 0.04
-    rig.current.rotation.x += (target.current.y * 0.08 - rig.current.rotation.x) * 0.04
-  })
+  const planets = useMemo(
+    () => [
+      { map: mercuryMap, orbitRadius: 10, angularSpeed: 0.52, radius: 0.42, selfSpinSpeed: 0.55 },
+      { map: earthMap, orbitRadius: 18, angularSpeed: 0.26, radius: 1, selfSpinSpeed: 0.85 },
+      { map: marsMap, orbitRadius: 23, angularSpeed: 0.21, radius: 0.52, selfSpinSpeed: 0.78 },
+      { map: jupiterMap, orbitRadius: 34, angularSpeed: 0.095, radius: 2.35, selfSpinSpeed: 1.35 },
+    ],
+    [mercuryMap, earthMap, marsMap, jupiterMap],
+  )
 
-  return <group ref={rig}>{children}</group>
+  return (
+    <group>
+      <mesh>
+        <sphereGeometry args={[2.6, 48, 48]} />
+        <meshStandardMaterial
+          color="#ffcc88"
+          emissive="#ff9944"
+          emissiveIntensity={1.35}
+          roughness={0.55}
+          metalness={0.05}
+        />
+      </mesh>
+      {planets.map((p) => (
+        <OrbitingPlanet key={p.orbitRadius} {...p} geometry={geometry} />
+      ))}
+    </group>
+  )
 }
 
-export default function Background3D() {
+function SolarSystem({ onTexturesReady }) {
+  return (
+    <Suspense fallback={null}>
+      <SolarSystemInner onTexturesReady={onTexturesReady} />
+    </Suspense>
+  )
+}
+
+export default function Background3D({ onTexturesReady }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-      <Canvas camera={{ position: [0, 0, 60], fov: 52 }} dpr={Math.min(window.devicePixelRatio, 1.5)} gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}>
-        <ambientLight intensity={0.6} />
-        <pointLight position={[20, 20, 20]} intensity={1.1} color="#54d8ff" />
-        <pointLight position={[-18, -16, -4]} intensity={0.9} color="#8b5cff" />
+      <Canvas
+        camera={{ position: [0, 34, 82], fov: 52 }}
+        dpr={Math.min(window.devicePixelRatio, 1.5)}
+        gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
+        style={{ width: '100%', height: '100%', touchAction: 'none', pointerEvents: 'auto' }}
+      >
+        <ambientLight intensity={0.22} />
+        <pointLight position={[0, 0, 0]} intensity={12} color="#ffe8cc" decay={2} distance={0} />
+        <pointLight position={[28, 18, 12]} intensity={0.45} color="#9ec8ff" decay={2} distance={120} />
 
-        <CameraRig>
-          <StarField />
-          <OrbitalRings />
-          <NebulaBlob position={[-36, -18, -95]} color="#2acbff" speed={0.9} scale={1.7} />
-          <NebulaBlob position={[44, 26, -118]} color="#9d63ff" speed={0.7} scale={2.1} />
-        </CameraRig>
+        <SolarSystem onTexturesReady={onTexturesReady} />
+        <StarField count={6500} />
+
+        <OrbitControls
+          makeDefault
+          enableDamping
+          dampingFactor={0.06}
+          minDistance={18}
+          maxDistance={140}
+          enablePan
+          zoomSpeed={0.85}
+          rotateSpeed={0.35}
+          maxPolarAngle={Math.PI * 0.495}
+          minPolarAngle={Math.PI * 0.08}
+        />
 
         <EffectComposer disableNormalPass multisampling={0}>
-          <Bloom intensity={0.95} luminanceThreshold={0.08} mipmapBlur radius={0.85} />
+          <Bloom intensity={0.72} luminanceThreshold={0.12} mipmapBlur radius={0.72} />
           <Noise opacity={0.03} />
           <Vignette eskil={false} offset={0.28} darkness={0.72} />
         </EffectComposer>
