@@ -36,7 +36,7 @@ function RatingBlock({ rating, index }) {
       transition={{ duration: 0.5, delay: index * 0.1 }}
     >
       {/* Platform label */}
-      <span className="font-mono mb-6 transition-colors duration-300 group-hover:text-white" style={{ fontSize: '0.65rem', letterSpacing: '4px', color: rating.color }}>
+      <span className="font-mono mb-6 transition-colors duration-300 group-hover:text-white" style={{ fontSize: '0.68rem', letterSpacing: '0.18em', color: rating.color }}>
         {rating.platform.toUpperCase()}
       </span>
 
@@ -51,7 +51,7 @@ function RatingBlock({ rating, index }) {
       </span>
 
       {/* Sublabel */}
-      <span className="font-mono mt-3 opacity-60 transition-opacity duration-300 group-hover:opacity-100" style={{ fontSize: '0.55rem', letterSpacing: '2px', color: 'var(--color-text)' }}>
+      <span className="font-mono mt-3 opacity-75 transition-opacity duration-300 group-hover:opacity-100" style={{ fontSize: '0.62rem', letterSpacing: '0.06em', color: 'var(--color-text-muted)' }}>
         {rating.sublabel}
       </span>
     </motion.div>
@@ -64,7 +64,7 @@ export default function RatingsSection() {
 
   return (
     <section id="ratings" className="section-padding relative" style={{ zIndex: 1 }} ref={ref}>
-      <div style={{ maxWidth: '1300px', margin: '0 auto' }}>
+      <div className="content-max">
         {/* Section label */}
         <motion.div
           className="flex items-center gap-4 mb-6"
@@ -73,7 +73,7 @@ export default function RatingsSection() {
           transition={{ duration: 0.6 }}
         >
           <span className="w-8 h-[1px] bg-[var(--color-accent)] block"></span>
-          <span className="font-mono text-[0.65rem] tracking-[0.4em] text-[var(--color-accent)]">
+          <span className="font-mono text-[0.68rem] tracking-[0.22em] text-[var(--color-accent)]">
             04 — COMPETITIVE
           </span>
         </motion.div>

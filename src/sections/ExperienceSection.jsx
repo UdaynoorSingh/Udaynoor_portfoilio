@@ -65,8 +65,8 @@ function TimelineCard({ exp, index, isLast }) {
       )}
 
       {/* Content */}
-      <div className="glass-card transition-all duration-300 hover:scale-[1.02]" style={{ padding: '40px' }}>
-        <span className="font-mono" style={{ fontSize: '0.65rem', letterSpacing: '4px', color: 'var(--color-accent-secondary)', textTransform: 'uppercase' }}>
+      <div className="glass-card transition-all duration-300 hover:scale-[1.01]" style={{ padding: 'clamp(24px,4vw,36px)' }}>
+        <span className="font-mono" style={{ fontSize: '0.68rem', letterSpacing: '0.2em', color: 'var(--color-accent-secondary)', textTransform: 'uppercase' }}>
           {exp.period}
         </span>
         <h3 className="font-bebas mt-3" style={{ fontSize: '2.5rem', color: '#ffffff', lineHeight: 1.0 }}>
@@ -75,9 +75,9 @@ function TimelineCard({ exp, index, isLast }) {
         <span className="font-mono block mt-3" style={{ color: 'var(--color-accent)', fontSize: '0.8rem', letterSpacing: '1px' }}>
           {exp.company}
         </span>
-        <ul className="mt-6 space-y-4 border-t border-white/5 pt-6">
+        <ul className="mt-6 space-y-4 border-t border-white/10 pt-6">
           {exp.points.map((point, i) => (
-            <li key={i} className="font-dm flex group" style={{ color: 'var(--color-text-muted)', fontWeight: 300, fontSize: '0.9rem', lineHeight: 1.8 }}>
+            <li key={i} className="font-dm flex group" style={{ color: 'var(--color-text-muted)', fontWeight: 400, fontSize: '0.95rem', lineHeight: 1.75 }}>
               <span className="transition-transform duration-300 group-hover:translate-x-1" style={{ color: 'var(--color-accent-secondary)', marginRight: '14px', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.8rem', marginTop: '3px' }}>▸</span>
               <span className="group-hover:text-white/90 transition-colors duration-300">{point}</span>
             </li>
@@ -94,7 +94,7 @@ export default function ExperienceSection() {
 
   return (
     <section id="experience" ref={ref} className="section-padding relative" style={{ zIndex: 1 }}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+      <div className="content-max content-max--timeline">
         {/* Section label */}
         <motion.div
           className="flex items-center gap-4 mb-6"
@@ -103,7 +103,7 @@ export default function ExperienceSection() {
           transition={{ duration: 0.6 }}
         >
           <span className="w-8 h-[1px] bg-[var(--color-accent)] block"></span>
-          <span className="font-mono text-[0.65rem] tracking-[0.4em] text-[var(--color-accent)]">
+          <span className="font-mono text-[0.68rem] tracking-[0.22em] text-[var(--color-accent)]">
             02 — TIMELINE
           </span>
         </motion.div>

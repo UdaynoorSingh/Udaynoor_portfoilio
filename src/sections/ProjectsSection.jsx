@@ -79,13 +79,13 @@ function ProjectCard({ project, index }) {
             <span className="badge" style={{ color: project.color, borderColor: `${project.color}40`, background: `${project.color}10` }}>
               {project.status}
             </span>
-            <span className="font-mono text-white/20 text-xs">0{index + 1}</span>
+            <span className="font-mono text-white/45 text-xs tabular-nums">0{index + 1}</span>
           </div>
 
           <h3 className="font-bebas text-stroke hover:text-white transition-all duration-300" style={{ fontSize: '3rem', lineHeight: 1.0 }}>
             {project.title}
           </h3>
-          <p className="font-dm mt-4" style={{ color: 'var(--color-text-muted)', fontWeight: 300, fontSize: '0.95rem', lineHeight: 1.8 }}>
+          <p className="font-dm mt-4" style={{ color: 'var(--color-text-muted)', fontWeight: 400, fontSize: '0.98rem', lineHeight: 1.75 }}>
             {project.description}
           </p>
 
@@ -99,7 +99,7 @@ function ProjectCard({ project, index }) {
                   borderRadius: '4px',
                   background: 'rgba(255,255,255,0.03)',
                   color: 'rgba(255,255,255,0.6)',
-                  border: '1px solid rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
                   letterSpacing: '1px',
                 }}
               >{t}</span>
@@ -107,7 +107,7 @@ function ProjectCard({ project, index }) {
           </div>
 
           {/* View link */}
-          <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
+          <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between">
             <MagneticButton
               href={project.link}
               target="_blank"
@@ -138,9 +138,9 @@ export default function ProjectsSection() {
 
   return (
     <section id="projects" className="section-padding relative" style={{ zIndex: 1 }} ref={ref}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+      <div className="content-max">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div>
             <motion.div
               className="flex items-center gap-4 mb-6"
@@ -149,7 +149,7 @@ export default function ProjectsSection() {
               transition={{ duration: 0.6 }}
             >
               <span className="w-8 h-[1px] bg-[var(--color-accent)] block"></span>
-              <span className="font-mono text-[0.65rem] tracking-[0.4em] text-[var(--color-accent)]">
+              <span className="font-mono text-[0.68rem] tracking-[0.22em] text-[var(--color-accent)]">
                 03 — DIGITAL ARCHIVE
               </span>
             </motion.div>
@@ -171,11 +171,13 @@ export default function ProjectsSection() {
             transition={{ delay: 0.4 }}
             className="hidden md:block max-w-xs text-right"
           >
-            <p className="font-dm text-sm text-white/40 leading-relaxed">
+            <p className="font-dm text-sm font-normal text-white/65 leading-relaxed">
               A collection of digital experiences blending robust engineering with cinematic aesthetics.
             </p>
           </motion.div>
         </div>
+
+        <div className="section-divider section-divider--wide mt-10 mb-14" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((p, i) => (

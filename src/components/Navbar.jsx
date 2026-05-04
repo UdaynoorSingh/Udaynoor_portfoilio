@@ -50,16 +50,17 @@ export default function Navbar() {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.3 }}
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-8 py-4"
+        className="fixed top-0 left-0 right-0 z-50 py-3.5 md:py-4"
         style={{
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          background: scrolled ? 'rgba(2,2,5,0.8)' : 'rgba(2,2,5,0.4)',
-          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
-          boxShadow: scrolled ? '0 4px 30px rgba(0,0,0,0.5)' : 'none',
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+          background: scrolled ? 'rgba(2,2,5,0.88)' : 'rgba(2,2,5,0.52)',
+          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(255,255,255,0.06)',
+          boxShadow: scrolled ? '0 8px 32px rgba(0,0,0,0.45)' : 'none',
           transition: 'all 0.4s ease',
         }}
       >
+        <div className="content-max flex items-center justify-between gap-4 px-4 md:px-6">
         {/* Logo */}
         <a
           href="#hero"
@@ -71,7 +72,7 @@ export default function Navbar() {
         </a>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-6 lg:gap-8">
+        <div className="hidden md:flex flex-1 items-center justify-end gap-4 lg:gap-6 min-w-0">
           {links.map((link) => {
             const isActive = activeSection === link.href.slice(1)
             return (
@@ -79,12 +80,12 @@ export default function Navbar() {
                 key={link.label}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className="font-mono relative py-1 interactive fx-underline fx-sheen"
+                className="font-mono relative shrink-0 py-1 interactive fx-underline fx-sheen"
                 data-active={isActive}
                 style={{
-                  fontSize: '0.6rem',
-                  letterSpacing: '4px',
-                  color: isActive ? 'var(--color-accent)' : 'var(--color-primary)',
+                  fontSize: '0.68rem',
+                  letterSpacing: '0.14em',
+                  color: isActive ? 'var(--color-accent)' : 'rgba(245, 248, 255, 0.88)',
                   textDecoration: 'none',
                   textTransform: 'uppercase',
                   transition: 'color 0.3s ease',
@@ -98,7 +99,7 @@ export default function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden flex flex-col gap-1 p-2 interactive"
+          className="md:hidden flex shrink-0 flex-col gap-1 p-2 interactive"
           onClick={() => setMobileOpen(!mobileOpen)}
           style={{ background: 'none', border: 'none', cursor: 'pointer' }}
         >
@@ -118,6 +119,7 @@ export default function Navbar() {
             transition: 'transform 0.3s ease',
           }} />
         </button>
+        </div>
       </motion.nav>
 
       {/* Mobile menu overlay */}

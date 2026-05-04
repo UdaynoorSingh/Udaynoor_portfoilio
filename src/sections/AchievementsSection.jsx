@@ -47,7 +47,7 @@ function AchievementCard({ achievement, index }) {
       <h3 className="font-bebas tracking-wide transition-colors duration-300" style={{ fontSize: '1.8rem', color: achievement.color, lineHeight: 1.2, textShadow: `0 0 20px ${achievement.color}40` }}>
         {achievement.title}
       </h3>
-      <p className="font-dm mt-4" style={{ color: 'var(--color-text-muted)', fontWeight: 300, fontSize: '0.9rem', lineHeight: 1.8 }}>
+      <p className="font-dm mt-4" style={{ color: 'var(--color-text-muted)', fontWeight: 400, fontSize: '0.95rem', lineHeight: 1.75 }}>
         {achievement.description}
       </p>
     </motion.div>
@@ -60,7 +60,7 @@ export default function AchievementsSection() {
 
   return (
     <section id="achievements" className="section-padding relative" style={{ zIndex: 1 }} ref={ref}>
-      <div style={{ maxWidth: '1300px', margin: '0 auto' }}>
+      <div className="content-max">
         {/* Section label */}
         <motion.div
           className="flex items-center gap-4 mb-6"
@@ -69,7 +69,7 @@ export default function AchievementsSection() {
           transition={{ duration: 0.6 }}
         >
           <span className="w-8 h-[1px] bg-[var(--color-accent-secondary)] block"></span>
-          <span className="font-mono text-[0.65rem] tracking-[0.4em] text-[var(--color-accent-secondary)]">
+          <span className="font-mono text-[0.68rem] tracking-[0.22em] text-[var(--color-accent-secondary)]">
             05 — RECOGNITION
           </span>
         </motion.div>

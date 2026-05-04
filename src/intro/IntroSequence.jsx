@@ -86,8 +86,8 @@ function InfoCard({ cardRef, position, title, subtitle }) {
         width: '500px',
         padding: '24px',
       }}>
-        <h3 className="font-serif italic tracking-[0.3em] text-4xl text-white/90 mb-4" style={{ textShadow: '0 0 30px rgba(200, 216, 240, 0.9), 0 0 10px rgba(255, 255, 255, 0.5)' }}>{title}</h3>
-        <p className="font-light text-[0.85rem] text-cyan-50/70 leading-loose tracking-[0.25em]" style={{ textShadow: '0 0 15px rgba(0, 207, 255, 0.5)' }}>{subtitle}</p>
+        <h3 className="font-playfair italic tracking-[0.22em] text-4xl text-white/95 mb-4" style={{ textShadow: '0 0 30px rgba(200, 216, 240, 0.9), 0 0 10px rgba(255, 255, 255, 0.5)' }}>{title}</h3>
+        <p className="font-dm font-normal text-[0.9rem] text-cyan-50/85 leading-relaxed tracking-[0.12em]" style={{ textShadow: '0 0 15px rgba(0, 207, 255, 0.5)' }}>{subtitle}</p>
       </div>
     </Html>
   )
@@ -808,8 +808,8 @@ function PreSequenceOverlay({ onBegin }) {
           />
           <SeedParticleCanvas2D />
         </div>
-        <p className="mt-12 font-mono text-[0.55rem] tracking-[0.38em] text-white/38">TAP ANYWHERE TO BEGIN</p>
-        <p className="mt-3 max-w-[280px] px-4 text-center font-mono text-[0.48rem] leading-relaxed tracking-[0.22em] text-white/20">
+        <p className="mt-12 font-mono text-[0.62rem] tracking-[0.28em] text-white/58">TAP ANYWHERE TO BEGIN</p>
+        <p className="mt-3 max-w-[300px] px-4 text-center font-mono text-[0.55rem] leading-relaxed tracking-[0.16em] text-white/42">
           or wait — sequence starts automatically
         </p>
       </div>

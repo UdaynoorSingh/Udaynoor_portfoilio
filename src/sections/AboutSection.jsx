@@ -116,14 +116,14 @@ export default function AboutSection() {
 
   return (
     <section id="about" className="section-padding relative" style={{ zIndex: 1 }} ref={ref}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+      <div className="content-max">
         
         <div className="flex flex-col xl:flex-row gap-20 items-center">
           {/* Left — Text */}
           <motion.div variants={stagger} initial="hidden" animate={inView ? 'visible' : 'hidden'} className="xl:w-1/2">
             <motion.div variants={fadeUp} className="flex items-center gap-4 mb-6">
               <span className="w-8 h-[1px] bg-[var(--color-accent)] block"></span>
-              <span className="font-mono text-[0.65rem] tracking-[0.4em] text-[var(--color-accent)]">
+              <span className="font-mono text-[0.68rem] tracking-[0.22em] text-[var(--color-accent)]">
                 01 — IDENTIFIER
               </span>
             </motion.div>
@@ -134,7 +134,7 @@ export default function AboutSection() {
             
             <div className="section-divider mt-8 mb-10" />
             
-            <motion.div variants={fadeUp} className="glass-card p-10 space-y-6 font-dm" style={{ color: 'var(--color-text-muted)', fontWeight: 300, lineHeight: 1.9, fontSize: '1rem' }}>
+            <motion.div variants={fadeUp} className="glass-card p-8 sm:p-10 space-y-6 font-dm" style={{ color: 'var(--color-text-muted)', fontWeight: 400, lineHeight: 1.85, fontSize: '1.02rem' }}>
               <p>
                 I'm a B.Tech Information Technology student at <span className="text-white font-medium">IIIT Allahabad</span> with a CGPA of <span className="text-[var(--color-accent)] font-mono">9.40</span>.
                 I engineer immersive digital experiences that blur the line between highly performant full-stack applications and interactive art.

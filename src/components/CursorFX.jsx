@@ -446,10 +446,10 @@ export default function CursorFX() {
           <span
             className="rounded-sm border border-white/15 bg-black/55 px-2 py-1 backdrop-blur-md"
             style={{
-              fontSize: '0.52rem',
-              letterSpacing: '0.28em',
-              color: 'rgba(255,255,255,0.82)',
-              textShadow: '0 0 18px rgba(0,229,255,0.45)',
+              fontSize: '0.58rem',
+              letterSpacing: '0.12em',
+              color: 'rgba(255,255,255,0.92)',
+              textShadow: '0 0 14px rgba(0,0,0,0.85), 0 0 18px rgba(0,229,255,0.4)',
             }}
           >
             {tagText}

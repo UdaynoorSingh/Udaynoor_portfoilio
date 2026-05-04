@@ -62,7 +62,7 @@ export default function ContactSection() {
       )}
 
       <div className="section-padding relative z-10 w-full" style={{ background: 'linear-gradient(to bottom, var(--color-bg) 0%, transparent 50%, var(--color-bg) 100%)' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+        <div className="content-max content-max--contact text-center">
 
           <motion.div
             className="flex items-center justify-center gap-4 mb-6"
@@ -71,7 +71,7 @@ export default function ContactSection() {
             transition={{ duration: 0.6 }}
           >
             <span className="w-8 h-[1px] bg-[var(--color-accent-secondary)] block"></span>
-            <span className="font-mono text-[0.65rem] tracking-[0.4em] text-[var(--color-accent-secondary)]">
+            <span className="font-mono text-[0.68rem] tracking-[0.22em] text-[var(--color-accent-secondary)]">
               06 — TERMINAL
             </span>
             <span className="w-8 h-[1px] bg-[var(--color-accent-secondary)] block"></span>
@@ -88,8 +88,8 @@ export default function ContactSection() {
           </motion.h2>
 
           <motion.p
-            className="font-dm mx-auto mt-12"
-            style={{ color: 'var(--color-text-muted)', fontSize: '1.1rem', fontWeight: 300, lineHeight: 1.8, maxWidth: '500px' }}
+            className="font-dm mx-auto mt-10 max-w-lg"
+            style={{ color: 'var(--color-text-muted)', fontSize: '1.05rem', fontWeight: 400, lineHeight: 1.75 }}
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
             transition={{ delay: 0.4 }}
@@ -100,7 +100,7 @@ export default function ContactSection() {
           {/* Terminal */}
           <motion.div
             className="glass-card mx-auto mt-12 interactive hover:scale-[1.02] transition-transform duration-500"
-            style={{ maxWidth: '600px', textAlign: 'left', padding: '28px 32px', borderRadius: '12px', background: 'rgba(2,2,5,0.7)' }}
+            style={{ maxWidth: '640px', textAlign: 'left', padding: '28px clamp(20px,4vw,32px)', borderRadius: '14px', background: 'rgba(6, 8, 16, 0.82)' }}
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.5, duration: 0.6 }}
@@ -108,7 +108,7 @@ export default function ContactSection() {
             {/* Terminal header — black hole toggle lives here (Contact section only) */}
             <div
               className="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4"
-              style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+              style={{ borderBottom: '1px solid rgba(255,255,255,0.12)' }}
             >
               <div className="flex min-w-0 items-center gap-2">
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f56' }} />

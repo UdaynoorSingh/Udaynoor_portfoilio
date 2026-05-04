@@ -58,7 +58,7 @@ function ScrollIndicator() {
       style={{ transform: 'translateX(-50%)', cursor: 'pointer' }}
       onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
     >
-      <span className="font-mono uppercase" style={{ fontSize: '0.6rem', letterSpacing: '6px', color: 'rgba(255,255,255,0.4)' }}>
+      <span className="font-mono uppercase" style={{ fontSize: '0.65rem', letterSpacing: '0.35em', color: 'rgba(255,255,255,0.58)' }}>
         Explore
       </span>
       <motion.div
@@ -82,11 +82,11 @@ export default function HeroSection() {
       <div className="hero-radial-one" />
       <div className="hero-radial-two" />
 
-      <div className="w-full grid grid-cols-1 xl:grid-cols-5 items-center gap-12" style={{ maxWidth: '1400px', margin: '0 auto', padding: '120px 5% 80px' }}>
+      <div className="content-max grid w-full grid-cols-1 xl:grid-cols-5 items-center gap-12 px-4 md:px-6" style={{ paddingTop: 'clamp(96px, 14vh, 140px)', paddingBottom: 'clamp(72px, 10vh, 100px)' }}>
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="xl:col-span-3 z-10 relative">
           <motion.div variants={itemVariants} className="flex items-center gap-4 mb-8">
             <span className="w-8 h-[1px] bg-white/30 block" />
-            <span className="font-mono text-xs uppercase tracking-[0.4em] text-white/50">Orbital Portfolio Interface</span>
+            <span className="font-mono text-xs uppercase tracking-[0.28em] text-white/65">Orbital Portfolio Interface</span>
           </motion.div>
 
           <motion.h1 variants={itemVariants} className="font-bebas leading-[0.85] select-none hero-title" style={{ fontSize: 'clamp(4.2rem, 10vw, 11rem)' }}>
@@ -99,7 +99,7 @@ export default function HeroSection() {
           </motion.div>
 
           <motion.div variants={itemVariants} className="inline-flex items-center gap-6 px-6 py-3 glass-card rounded-full interactive hero-chip">
-            <span className="font-dm text-sm font-light text-white/70">IIIT Allahabad | B.Tech IT</span>
+            <span className="font-dm text-sm font-medium text-white/82">IIIT Allahabad | B.Tech IT</span>
             <span className="w-[1px] h-4 bg-white/20" />
             <span className="font-mono text-xs tracking-widest text-[#00e5ff] glow-cyan">CGPA 9.40</span>
           </motion.div>
