@@ -139,15 +139,17 @@ export default function ProjectsSection() {
 
   useEffect(() => {
     let cancelled = false
-    fetch('/api/projects/', { credentials: 'same-origin' })
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((data) => {
+    ;(async () => {
+      try {
+        const res = await fetch('/api/projects/', { credentials: 'same-origin' })
+        if (!res.ok) throw new Error('projects_unavailable')
+        const data = await res.json()
         const list = Array.isArray(data.results) ? data.results : []
         if (!cancelled) setProjects(list)
-      })
-      .catch(() => {
+      } catch {
         if (!cancelled) setProjects(null)
-      })
+      }
+    })()
     return () => {
       cancelled = true
     }
@@ -200,7 +202,11 @@ export default function ProjectsSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayProjects.map((p, i) => (
-            <ProjectCard key={`${p.title}-${i}`} project={p} index={i} />
+            <ProjectCard
+              key={p.slug ? `${p.slug}-${p.id ?? i}` : `${p.title}-${i}`}
+              project={p}
+              index={i}
+            />
           ))}
         </div>
       </div>

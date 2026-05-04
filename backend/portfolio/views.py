@@ -6,7 +6,7 @@ from django.views.decorators.http import require_GET, require_POST, require_http
 
 from portfolio_site.settings import FRONTEND_DIST
 
-from .models import ContactMessage, Project
+from .models import ContactMessage, Project, TechMarqueeItem
 
 
 @ensure_csrf_cookie
@@ -33,11 +33,13 @@ def spa_index(request):
 
 @require_GET
 def projects_list(request):
-    """Trimmed field query for the projects grid — single round-trip, indexed ordering."""
+    """Projects grid JSON — fields align with the React `ProjectCard` props (`tech` from `tech_stack`)."""
     qs = (
         Project.objects.filter(published=True)
         .order_by("sort_order", "-updated_at")
         .only(
+            "id",
+            "slug",
             "title",
             "description",
             "tech_stack",
@@ -48,6 +50,8 @@ def projects_list(request):
     )
     data = [
         {
+            "id": p.id,
+            "slug": p.slug,
             "title": p.title,
             "description": p.description,
             "tech": p.tech_stack or [],
@@ -58,6 +62,15 @@ def projects_list(request):
         for p in qs
     ]
     return JsonResponse({"results": data})
+
+
+@require_GET
+def tech_marquee(request):
+    """Two-row tech stack strings for the marquee section (order preserved per row)."""
+    qs = TechMarqueeItem.objects.filter(published=True).order_by("row", "sort_order", "id")
+    row1 = [item.label for item in qs if item.row == TechMarqueeItem.ROW_ONE]
+    row2 = [item.label for item in qs if item.row == TechMarqueeItem.ROW_TWO]
+    return JsonResponse({"row1": row1, "row2": row2})
 
 
 @require_POST

@@ -34,6 +34,34 @@ class Project(models.Model):
         return self.title
 
 
+class TechMarqueeItem(models.Model):
+    """Ordered labels for the tech marquee (two rows). Editable in admin, exposed via /api/tech-marquee/."""
+
+    ROW_ONE = 1
+    ROW_TWO = 2
+    ROW_CHOICES = [
+        (ROW_ONE, "Row 1 (forward)"),
+        (ROW_TWO, "Row 2 (reverse)"),
+    ]
+
+    row = models.PositiveSmallIntegerField(choices=ROW_CHOICES, db_index=True)
+    label = models.CharField(max_length=120, help_text="Display text, e.g. REACT or NODE.JS")
+    sort_order = models.PositiveIntegerField(
+        default=0,
+        db_index=True,
+        help_text="Lower numbers appear first within the row.",
+    )
+    published = models.BooleanField(default=True, db_index=True)
+
+    class Meta:
+        ordering = ["row", "sort_order", "id"]
+        verbose_name = "Tech marquee item"
+        verbose_name_plural = "Tech marquee items"
+
+    def __str__(self) -> str:
+        return f"Row {self.row} · {self.label}"
+
+
 class ContactMessage(models.Model):
     """Inbound messages from the site contact form (visible in admin)."""
 

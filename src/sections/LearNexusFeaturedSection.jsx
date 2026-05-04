@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
+import LearNexusMiniBoard from '../components/LearNexusMiniBoard'
 
 const challenges = [
   'Isolating the Nexus Board from monolithic state so feature teams could ship without cross-breakage under tight college deadlines',
@@ -95,6 +96,8 @@ export default function LearNexusFeaturedSection() {
             layer in the client: read-optimised projections, write paths through idempotent commands, and circuit breakers when
             third-party college systems slow down.
           </p>
+
+          <LearNexusMiniBoard />
 
           <h4 className="font-mono learn-nexus-subhead">Challenges</h4>
           <ul className="learn-nexus-list font-dm">

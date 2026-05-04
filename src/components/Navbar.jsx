@@ -40,7 +40,7 @@ function AmbientAudioToggle() {
   )
 }
 
-export default function Navbar() {
+export default function Navbar({ usePlanetMatrixNav = true }) {
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('')
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -77,6 +77,7 @@ export default function Navbar() {
   return (
     <>
       <motion.nav
+        data-site-navbar
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.3 }}
@@ -92,6 +93,7 @@ export default function Navbar() {
       >
         <div className="content-max flex items-center justify-between gap-4 px-4 md:px-6">
         {/* Logo */}
+        <div className="flex min-w-0 flex-col gap-0.5">
         <a
           href="#hero"
           onClick={(e) => handleNavClick(e, '#hero')}
@@ -100,9 +102,17 @@ export default function Navbar() {
         >
           U·S
         </a>
+        {usePlanetMatrixNav && (
+          <span className="hidden sm:block font-mono max-w-[11rem] leading-tight" style={{ fontSize: '0.52rem', letterSpacing: '0.06em', color: 'rgba(200,216,240,0.42)' }}>
+            Click planets behind the page to fly there — Mars: About · Jupiter: Projects
+          </span>
+        )}
+        </div>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex flex-1 items-center justify-end gap-4 lg:gap-6 min-w-0">
+        {/* Desktop Links — hidden when using matrix planet navigation */}
+        <div
+          className={`flex-1 items-center justify-end gap-4 lg:gap-6 min-w-0 ${usePlanetMatrixNav ? 'hidden' : 'hidden md:flex'}`}
+        >
           {links.map((link) => {
             const isActive = activeSection === link.href.slice(1)
             return (
@@ -128,11 +138,21 @@ export default function Navbar() {
         </div>
 
         <div className="flex shrink-0 items-center gap-1 md:gap-2">
+        {usePlanetMatrixNav && (
+          <span className="md:hidden font-mono pr-1" style={{ fontSize: '0.55rem', letterSpacing: '0.2em', color: 'rgba(200,216,240,0.45)' }}>
+            3D NAV
+          </span>
+        )}
         <AmbientAudioToggle />
 
-        {/* Mobile hamburger */}
+        {/* Mobile hamburger — hidden when using planet matrix nav */}
         <button
-          className="md:hidden flex shrink-0 flex-col gap-1 p-2 interactive"
+          type="button"
+          className={
+            usePlanetMatrixNav
+              ? 'hidden'
+              : 'md:hidden flex shrink-0 flex-col gap-1 p-2 interactive'
+          }
           onClick={() => setMobileOpen(!mobileOpen)}
           style={{ background: 'none', border: 'none', cursor: 'pointer' }}
         >
@@ -158,7 +178,7 @@ export default function Navbar() {
 
       {/* Mobile menu overlay */}
       <AnimatePresence>
-        {mobileOpen && (
+        {mobileOpen && !usePlanetMatrixNav && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}

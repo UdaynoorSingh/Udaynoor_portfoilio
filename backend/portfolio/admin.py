@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ContactMessage, Project
+from .models import ContactMessage, Project, TechMarqueeItem
 
 
 @admin.register(Project)
@@ -10,6 +10,13 @@ class ProjectAdmin(admin.ModelAdmin):
     search_fields = ("title", "slug", "description")
     prepopulated_fields = {"slug": ("title",)}
     ordering = ("sort_order", "-updated_at")
+
+
+@admin.register(TechMarqueeItem)
+class TechMarqueeItemAdmin(admin.ModelAdmin):
+    list_display = ("label", "row", "sort_order", "published")
+    list_filter = ("published", "row")
+    ordering = ("row", "sort_order", "id")
 
 
 @admin.register(ContactMessage)

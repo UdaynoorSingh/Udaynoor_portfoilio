@@ -1679,3 +1679,704 @@ html.cursor-hover .cursor-inner {
   text-transform: uppercase;
   color: rgba(200, 216, 240, 0.4);
 }
+
+/* LearNexus mini-board — GPU-friendly transitions (opacity + transform3d only) */
+@keyframes ln-mini-board-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.ln-mini-board {
+  margin-top: 1.5rem;
+  padding: clamp(1rem, 3vw, 1.25rem);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(
+    155deg,
+    rgba(8, 14, 28, 0.55) 0%,
+    rgba(6, 10, 22, 0.72) 100%
+  );
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+.ln-mini-board__head {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .ln-mini-board__head {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.25rem;
+  }
+}
+
+.ln-mini-board__title {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin: 0 0 0.35rem;
+}
+
+.ln-mini-board__hint {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: rgba(200, 216, 240, 0.78);
+  max-width: 42ch;
+}
+
+.ln-mini-board__toggle {
+  display: flex;
+  flex-shrink: 0;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ln-mini-board__segment {
+  position: relative;
+  padding: 0.5rem 0.95rem;
+  border: none;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(230, 236, 245, 0.55);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease,
+    background 0.2s ease;
+  transform: translateZ(0);
+}
+
+.ln-mini-board__segment:hover {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.ln-mini-board__segment--on {
+  color: var(--color-bg);
+  background: linear-gradient(135deg, var(--color-accent) 0%, rgba(0, 180, 220, 0.92) 100%);
+  box-shadow: 0 4px 18px rgba(0, 229, 255, 0.22);
+}
+
+.ln-mini-board__viewport {
+  position: relative;
+  margin-top: 1.1rem;
+  min-height: 12.5rem;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.ln-mini-board__rail {
+  position: absolute;
+  left: 0;
+  top: 0.35rem;
+  bottom: 0.35rem;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--color-accent) 0%, rgba(123, 44, 191, 0.55) 100%);
+  opacity: 0.45;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+
+.ln-mini-board__list {
+  position: relative;
+  margin: 0;
+  padding: 0 0 0 0.85rem;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  animation: ln-mini-board-enter 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ln-mini-board__card {
+  padding: 0.75rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0, 0, 0, 0.22);
+  transform: translateZ(0);
+  transition: border-color 0.2s ease;
+}
+
+.ln-mini-board__card:hover {
+  border-color: rgba(0, 229, 255, 0.18);
+}
+
+.ln-mini-board__card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.ln-mini-board__author {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(200, 216, 240, 0.62);
+}
+
+.ln-mini-board__badge {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.72);
+  transform: translateZ(0);
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.ln-mini-board__badge[data-tone='college'] {
+  background: rgba(0, 229, 255, 0.08);
+  border-color: rgba(0, 229, 255, 0.28);
+  color: var(--color-accent);
+}
+
+.ln-mini-board__badge[data-tone='global'] {
+  background: rgba(123, 44, 191, 0.12);
+  border-color: rgba(180, 140, 255, 0.35);
+  color: rgba(220, 200, 255, 0.92);
+}
+
+.ln-mini-board__card-title {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.ln-mini-board__card-meta {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: rgba(180, 196, 218, 0.55);
+}
+
+.ln-mini-board__footer {
+  margin: 1rem 0 0;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: rgba(160, 176, 200, 0.45);
+  line-height: 1.6;
+}
+
+.ln-mini-board__state-key {
+  color: var(--color-accent);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ln-mini-board__list {
+    animation: none;
+  }
+
+  .ln-mini-board__segment {
+    transition: none;
+  }
+
+  .ln-mini-board__card {
+    transition: none;
+  }
+}
+
+/* Recruiter terminal easter egg — transform/opacity only, compositor-friendly */
+@keyframes egg-terminal-pulse {
+  0%,
+  100% {
+    opacity: 0.28;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes egg-terminal-success {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.985, 0.985, 1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+.egg-terminal-trigger {
+  position: fixed;
+  bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 80px));
+  left: max(12px, env(safe-area-inset-left, 0px));
+  z-index: 48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(4, 8, 18, 0.55);
+  color: rgba(120, 210, 235, 0.85);
+  cursor: pointer;
+  transform: translateZ(0);
+  transition:
+    color 0.25s ease,
+    opacity 0.25s ease,
+    transform 0.2s ease;
+  opacity: 0.38;
+}
+
+.egg-terminal-trigger:hover,
+.egg-terminal-trigger:focus-visible {
+  opacity: 0.95;
+  color: var(--color-accent);
+  outline: 1px solid rgba(0, 229, 255, 0.35);
+  outline-offset: 2px;
+}
+
+.egg-terminal-trigger__glow {
+  position: absolute;
+  inset: -6px;
+  border-radius: 14px;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.22) 0%, transparent 72%);
+  opacity: 0.35;
+  pointer-events: none;
+  animation: egg-terminal-pulse 3.2s ease-in-out infinite;
+  transform: translateZ(0);
+}
+
+.egg-terminal-trigger__svg {
+  position: relative;
+  z-index: 1;
+  display: block;
+  transition:
+    filter 0.28s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.egg-terminal-trigger:hover .egg-terminal-trigger__svg,
+.egg-terminal-trigger:focus-visible .egg-terminal-trigger__svg {
+  filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.55));
+  transform: scale3d(1.08, 1.08, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .egg-terminal-trigger__glow {
+    animation: none;
+    opacity: 0.2;
+  }
+
+  .egg-terminal-trigger:hover .egg-terminal-trigger__svg,
+  .egg-terminal-trigger:focus-visible .egg-terminal-trigger__svg {
+    transform: none;
+    filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.35));
+  }
+}
+
+.egg-terminal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 194;
+  background: rgba(0, 2, 8, 0.72);
+  transform: translateZ(0);
+}
+
+.egg-terminal-panel {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 195;
+  width: min(92vw, 480px);
+  max-height: min(78vh, 560px);
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 229, 255, 0.22);
+  background: rgba(4, 8, 18, 0.94);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  transform: translate3d(-50%, -50%, 0);
+  transform-origin: center center;
+  contain: layout style paint;
+}
+
+.egg-terminal-panel--success {
+  animation: egg-terminal-success 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  border-color: rgba(0, 229, 255, 0.45);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.55),
+    0 0 36px rgba(0, 229, 255, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .egg-terminal-panel--success {
+    animation: none;
+  }
+}
+
+.egg-terminal-panel__chrome {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.egg-terminal-panel__dots {
+  display: flex;
+  gap: 6px;
+}
+
+.egg-terminal-panel__dots i {
+  display: block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.egg-terminal-panel__dots i:nth-child(1) {
+  background: rgba(255, 95, 87, 0.85);
+}
+
+.egg-terminal-panel__dots i:nth-child(2) {
+  background: rgba(255, 189, 46, 0.85);
+}
+
+.egg-terminal-panel__dots i:nth-child(3) {
+  background: rgba(40, 201, 64, 0.85);
+}
+
+.egg-terminal-panel__title {
+  flex: 1;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: rgba(200, 216, 240, 0.65);
+  transition:
+    color 0.3s ease,
+    text-shadow 0.3s ease,
+    letter-spacing 0.35s ease;
+}
+
+.egg-terminal-panel__chrome:hover .egg-terminal-panel__title {
+  color: rgba(200, 240, 255, 0.95);
+  letter-spacing: 0.12em;
+  text-shadow:
+    0 0 18px rgba(0, 229, 255, 0.35),
+    0 0 2px rgba(0, 229, 255, 0.45);
+}
+
+.egg-terminal-panel__close {
+  padding: 2px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 0.25s ease,
+    text-shadow 0.25s ease,
+    transform 0.22s ease;
+  transform: translateZ(0);
+}
+
+.egg-terminal-panel__close:hover {
+  color: #fff;
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.45);
+  transform: scale3d(1.12, 1.12, 1);
+}
+
+.egg-terminal-panel__close:focus-visible {
+  outline: 1px solid rgba(0, 229, 255, 0.45);
+  outline-offset: 2px;
+}
+
+.egg-terminal-panel__body {
+  padding: 16px 18px 20px;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: rgba(210, 222, 238, 0.88);
+}
+
+.egg-terminal-panel__line {
+  margin: 0 0 0.65rem;
+  transition:
+    color 0.28s ease,
+    text-shadow 0.28s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateZ(0);
+  cursor: default;
+}
+
+.egg-terminal-panel__body > p.egg-terminal-panel__line:hover {
+  color: rgba(238, 244, 255, 0.98);
+  text-shadow:
+    0 0 14px rgba(0, 229, 255, 0.22),
+    0 0 1px rgba(255, 255, 255, 0.08);
+  transform: translate3d(2px, 0, 0);
+}
+
+.egg-terminal-panel__line--accent {
+  color: rgba(0, 229, 255, 0.65);
+}
+
+.egg-terminal-panel__body > p.egg-terminal-panel__line--accent:hover {
+  color: rgba(120, 248, 255, 0.95);
+  text-shadow:
+    0 0 20px rgba(0, 229, 255, 0.42),
+    0 0 40px rgba(0, 229, 255, 0.12);
+  transform: translate3d(3px, 0, 0);
+}
+
+.egg-terminal-panel__line--indent {
+  padding-left: 0.75rem;
+  color: rgba(200, 216, 240, 0.82);
+}
+
+.egg-terminal-panel__body > p.egg-terminal-panel__line--indent:hover {
+  text-shadow: 0 0 12px rgba(200, 220, 255, 0.2);
+}
+
+.egg-terminal-panel__prompt {
+  margin-top: 0.75rem;
+}
+
+.egg-terminal-dim {
+  color: rgba(160, 176, 200, 0.5);
+  transition: color 0.25s ease;
+}
+
+.egg-terminal-panel__line:hover .egg-terminal-dim {
+  color: rgba(200, 220, 255, 0.75);
+}
+
+.egg-terminal-prompt {
+  color: rgba(0, 229, 255, 0.75);
+  transition:
+    color 0.25s ease,
+    text-shadow 0.25s ease;
+}
+
+.egg-terminal-panel__line:hover .egg-terminal-prompt {
+  color: rgba(100, 255, 255, 0.95);
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+}
+
+.egg-terminal-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.egg-terminal-input {
+  flex: 1;
+  min-width: 120px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  background: rgba(0, 0, 0, 0.45);
+  color: rgba(240, 246, 255, 0.95);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  outline: none;
+  transform: translateZ(0);
+  transition: border-color 0.2s ease;
+}
+
+.egg-terminal-input:focus {
+  border-color: rgba(0, 229, 255, 0.55);
+}
+
+.egg-terminal-submit {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  background: rgba(0, 229, 255, 0.12);
+  color: var(--color-accent);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transform: translateZ(0);
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    letter-spacing 0.3s ease,
+    text-shadow 0.25s ease,
+    color 0.2s ease;
+}
+
+.egg-terminal-submit:hover:not(:disabled) {
+  background: rgba(0, 229, 255, 0.22);
+  letter-spacing: 0.2em;
+  text-shadow:
+    0 0 16px rgba(0, 229, 255, 0.5),
+    0 0 2px rgba(255, 255, 255, 0.25);
+  color: #e8ffff;
+}
+
+.egg-terminal-submit:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.egg-terminal-msg {
+  margin: 0.85rem 0 0;
+  font-size: 0.72rem;
+  transition:
+    color 0.25s ease,
+    text-shadow 0.25s ease;
+}
+
+.egg-terminal-msg--err {
+  color: rgba(255, 130, 130, 0.9);
+}
+
+.egg-terminal-msg--err:hover {
+  color: rgba(255, 180, 180, 0.98);
+  text-shadow: 0 0 12px rgba(255, 100, 100, 0.35);
+}
+
+.egg-terminal-msg--ok {
+  color: rgba(130, 240, 200, 0.95);
+}
+
+.egg-terminal-msg--ok:hover {
+  color: rgba(180, 255, 220, 0.98);
+  text-shadow: 0 0 14px rgba(100, 255, 180, 0.28);
+}
+
+.egg-terminal-success-block {
+  margin-top: 0.75rem;
+}
+
+.egg-terminal-resume {
+  display: inline-block;
+  margin-top: 0.65rem;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--color-accent);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transform: translateZ(0);
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    letter-spacing 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    text-shadow 0.3s ease,
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.egg-terminal-resume:hover {
+  background: rgba(0, 229, 255, 0.18);
+  border-color: rgba(0, 229, 255, 0.6);
+  letter-spacing: 0.16em;
+  color: #e0ffff;
+  text-shadow:
+    0 0 20px rgba(0, 229, 255, 0.45),
+    0 0 2px rgba(255, 255, 255, 0.2);
+  transform: translate3d(0, -1px, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .egg-terminal-panel__body > p.egg-terminal-panel__line:hover,
+  .egg-terminal-panel__body > p.egg-terminal-panel__line--accent:hover,
+  .egg-terminal-panel__body > p.egg-terminal-panel__line--indent:hover {
+    transform: none;
+  }
+
+  .egg-terminal-panel__chrome:hover .egg-terminal-panel__title {
+    letter-spacing: 0.08em;
+  }
+
+  .egg-terminal-panel__close:hover {
+    transform: none;
+  }
+
+  .egg-terminal-resume:hover {
+    transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   3D planet navigation — clicks pass through page
+   chrome to the WebGL canvas (main is above z-index).
+   Re-enable pointer-events on real UI only.
+   ═══════════════════════════════════════════ */
+
+/* The <main> element itself was still receiving hits (only * targeted descendants). */
+main[data-portfolio-shell] {
+  pointer-events: none !important;
+}
+
+/* Top navbar sits above the canvas; blur strip must not steal planet clicks. */
+nav[data-site-navbar],
+nav[data-site-navbar] * {
+  pointer-events: none !important;
+}
+
+nav[data-site-navbar] a,
+nav[data-site-navbar] button {
+  pointer-events: auto !important;
+}
+
+main[data-portfolio-shell] * {
+  pointer-events: none !important;
+}
+
+main[data-portfolio-shell] a,
+main[data-portfolio-shell] button,
+main[data-portfolio-shell] input,
+main[data-portfolio-shell] textarea,
+main[data-portfolio-shell] select,
+main[data-portfolio-shell] summary,
+main[data-portfolio-shell] label[for],
+main[data-portfolio-shell] [role="button"],
+main[data-portfolio-shell] .interactive,
+main[data-portfolio-shell] .glass-card,
+main[data-portfolio-shell] .tilt-card,
+main[data-portfolio-shell] .magnetic,
+main[data-portfolio-shell] [data-cursor-label] {
+  pointer-events: auto !important;
+}

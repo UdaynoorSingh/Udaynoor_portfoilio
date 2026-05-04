@@ -1,12 +1,22 @@
-import { useRef } from 'react'
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 
-const techRow1 = [
-  'REACT NATIVE', 'NODE.JS', 'THREE.JS', 'FRAMER MOTION', 'TAILWIND CSS', 'MONGODB', 'EXPRESS', 'REACT NATIVE', 'NODE.JS', 'THREE.JS', 'FRAMER MOTION'
+/** Fallback cycles when API is unreachable — duplicated client-side for seamless loop (same visual length as before). */
+const FALLBACK_BASE_ROW1 = [
+  'REACT NATIVE',
+  'NODE.JS',
+  'THREE.JS',
+  'FRAMER MOTION',
+  'TAILWIND CSS',
+  'MONGODB',
+  'EXPRESS',
 ]
-const techRow2 = [
-  'C++', 'JAVASCRIPT', 'TYPESCRIPT', 'GSAP', 'WEBGL', 'NEXT.JS', 'POSTGRESQL', 'C++', 'JAVASCRIPT', 'TYPESCRIPT', 'GSAP'
-]
+const FALLBACK_BASE_ROW2 = ['C++', 'JAVASCRIPT', 'TYPESCRIPT', 'GSAP', 'WEBGL', 'NEXT.JS', 'POSTGRESQL']
+
+function doubleCycle(base) {
+  if (!base?.length) return []
+  return [...base, ...base]
+}
 
 function MarqueeRow({ items, direction = 1, speed = 15 }) {
   const containerRef = useRef(null)
@@ -21,7 +31,7 @@ function MarqueeRow({ items, direction = 1, speed = 15 }) {
       >
         {items.map((item, i) => (
           <span
-            key={i}
+            key={`${item}-${i}`}
             className="font-bebas text-stroke hover:text-[var(--color-accent)] transition-colors duration-300 interactive cursor-default"
             style={{ fontSize: 'clamp(4rem, 8vw, 7rem)', lineHeight: 0.9 }}
           >
@@ -34,13 +44,36 @@ function MarqueeRow({ items, direction = 1, speed = 15 }) {
 }
 
 export default function TechMarqueeSection() {
-  const { scrollYProgress } = useScroll()
-  // Add a slight scroll velocity effect to the skew to make it feel physical
-  const smoothVelocity = useSpring(scrollYProgress, {
-    damping: 50,
-    stiffness: 400
-  })
-  
+  const [marquee, setMarquee] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch('/api/tech-marquee/', { credentials: 'same-origin' })
+        if (!res.ok) throw new Error('tech_marquee_unavailable')
+        const data = await res.json()
+        const r1 = Array.isArray(data.row1) ? data.row1 : []
+        const r2 = Array.isArray(data.row2) ? data.row2 : []
+        if (!cancelled) setMarquee({ row1: r1, row2: r2 })
+      } catch {
+        if (!cancelled) setMarquee(null)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const techRow1 = useMemo(
+    () => doubleCycle(marquee?.row1?.length ? marquee.row1 : FALLBACK_BASE_ROW1),
+    [marquee],
+  )
+  const techRow2 = useMemo(
+    () => doubleCycle(marquee?.row2?.length ? marquee.row2 : FALLBACK_BASE_ROW2),
+    [marquee],
+  )
+
   return (
     <section className="relative w-full py-24 bg-[var(--color-bg)] overflow-hidden" style={{ zIndex: 1 }}>
       {/* Decorative lines */}
