@@ -10,6 +10,7 @@ import SceneLoadOverlay from './SceneLoadOverlay'
 import RecruiterTerminalEgg from './RecruiterTerminalEgg'
 import { SpaceAmbientProvider } from '../context/SpaceAmbientContext'
 import CursorFX from './CursorFX'
+import FluidCursor from './FluidCursor'
 import SectionThemeController from './SectionThemeController'
 import { AudioFX } from '../utils/AudioFX'
 
@@ -61,6 +62,7 @@ export default function Portfolio() {
   const [solarNavigatorOpen, setSolarNavigatorOpen] = useState(false)
 
   const [recruiterEggSolved, setRecruiterEggSolved] = useState(false)
+  const [fluidCursorEnabled, setFluidCursorEnabled] = useState(true)
 
   useEffect(() => {
     if (!solarNavigatorOpen) return
@@ -147,9 +149,14 @@ export default function Portfolio() {
         interactionOnTop={solarNavigatorOpen}
         eggSolarLightingBoost={recruiterEggSolved}
       />
+      {fluidCursorEnabled && <FluidCursor />}
       <CursorFX />
       <SectionThemeController />
-      <Navbar usePlanetMatrixNav />
+      <Navbar 
+        usePlanetMatrixNav 
+        isFluidEnabled={fluidCursorEnabled} 
+        onToggleFluid={() => setFluidCursorEnabled(prev => !prev)} 
+      />
       <PlanetNavOverlay
         planetKey={orbitPlanetKey}
         onExit={handlePlanetNavExit}

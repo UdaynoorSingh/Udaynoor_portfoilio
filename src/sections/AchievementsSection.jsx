@@ -1,5 +1,8 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
+import DotPattern from '../components/DotPattern'
+import TextReveal from '../components/TextReveal'
+import MagicCard from '../components/MagicCard'
 
 const achievements = [
   {
@@ -31,25 +34,28 @@ const achievements = [
 function AchievementCard({ achievement, index }) {
   return (
     <motion.div
-      className="glass-card interactive group transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02]"
-      style={{ padding: '40px' }}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: true }}
     >
-      {/* Icon + color bar */}
-      <div className="flex items-center gap-5 mb-6">
-        <span className="group-hover:scale-125 transition-transform duration-500" style={{ fontSize: '2rem' }}>{achievement.icon}</span>
-        <div className="group-hover:opacity-100 opacity-30 transition-opacity duration-500" style={{ flex: 1, height: '1px', background: `linear-gradient(90deg, ${achievement.color}, transparent)` }} />
-      </div>
+      <MagicCard 
+        className="interactive group transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02]"
+        style={{ padding: '40px' }}
+      >
+        {/* Icon + color bar */}
+        <div className="flex items-center gap-5 mb-6 relative z-10">
+          <span className="group-hover:scale-125 transition-transform duration-500" style={{ fontSize: '2rem' }}>{achievement.icon}</span>
+          <div className="group-hover:opacity-100 opacity-30 transition-opacity duration-500" style={{ flex: 1, height: '1px', background: `linear-gradient(90deg, ${achievement.color}, transparent)` }} />
+        </div>
 
-      <h3 className="font-bebas tracking-wide transition-colors duration-300" style={{ fontSize: '1.8rem', color: achievement.color, lineHeight: 1.2, textShadow: `0 0 20px ${achievement.color}40` }}>
-        {achievement.title}
-      </h3>
-      <p className="font-dm mt-4" style={{ color: 'var(--color-text-muted)', fontWeight: 400, fontSize: '0.95rem', lineHeight: 1.75 }}>
-        {achievement.description}
-      </p>
+        <h3 className="heading-3 tracking-wide transition-colors duration-300 relative z-10" style={{ color: achievement.color, textShadow: `0 0 20px ${achievement.color}40` }}>
+          {achievement.title}
+        </h3>
+        <p className="body-text mt-4 relative z-10">
+          {achievement.description}
+        </p>
+      </MagicCard>
     </motion.div>
   )
 }
@@ -60,6 +66,9 @@ export default function AchievementsSection() {
 
   return (
     <section id="achievements" className="section-padding relative" style={{ zIndex: 1 }} ref={ref}>
+      {/* Dot pattern background */}
+      <DotPattern dotColor="rgba(123,44,191,0.12)" />
+
       <div className="content-max">
         {/* Section label */}
         <motion.div
@@ -69,20 +78,17 @@ export default function AchievementsSection() {
           transition={{ duration: 0.6 }}
         >
           <span className="w-8 h-[1px] bg-[var(--color-accent-secondary)] block"></span>
-          <span className="font-mono text-[0.68rem] tracking-[0.22em] text-[var(--color-accent-secondary)]">
+          <span className="subheading" style={{ color: 'var(--color-accent-secondary)' }}>
             05 — RECOGNITION
           </span>
         </motion.div>
 
-        <motion.h2
-          className="font-bebas text-stroke hover:text-white transition-all duration-500"
-          style={{ fontSize: 'clamp(4rem, 9vw, 8rem)', lineHeight: 0.85 }}
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        <TextReveal
+          as="h2"
+          className="heading-2 text-stroke hover:text-white transition-all duration-500"
         >
           ACHIEVEMENTS
-        </motion.h2>
+        </TextReveal>
         <div className="section-divider mt-8 mb-16" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

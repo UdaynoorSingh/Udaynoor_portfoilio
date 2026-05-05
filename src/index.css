@@ -252,20 +252,62 @@ body::after {
 }
 
 /* ═══════════════════════════════════════════
+   TYPOGRAPHY HIERARCHY
+   ═══════════════════════════════════════════ */
+
+.heading-1 {
+  font-family: var(--font-bebas);
+  font-size: clamp(4.5rem, 11vw, 12rem);
+  line-height: 0.85;
+  text-transform: uppercase;
+}
+
+.heading-2 {
+  font-family: var(--font-bebas);
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.heading-3 {
+  font-family: var(--font-bebas);
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.subheading {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.body-text {
+  font-family: var(--font-dm);
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  line-height: 1.8;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+/* ═══════════════════════════════════════════
    SECTION SPACING
    ═══════════════════════════════════════════ */
 
 /* Main sections — rhythm matches nav + readable line length */
 .section-padding {
-  padding-block: clamp(72px, 10vw, 120px);
-  padding-inline: clamp(20px, 4vw, 80px);
+  padding-block: clamp(90px, 12vw, 160px);
+  padding-inline: clamp(20px, 5vw, 80px);
 }
 
-/* Gradient rule under section titles (class existed in JSX but had no styles) */
+/* Gradient rule under section titles */
 .section-divider {
   display: block;
   height: 1px;
-  width: min(100%, 560px);
+  width: 100%;
+  max-width: 600px;
   margin-left: 0;
   background: linear-gradient(90deg,
       rgba(0, 229, 255, 0.55) 0%,
@@ -282,13 +324,13 @@ body::after {
 /* Align with nav bar width */
 .content-max {
   width: 100%;
-  max-width: 1280px;
+  max-width: 1320px;
   margin-left: auto;
   margin-right: auto;
 }
 
 .content-max--timeline {
-  max-width: 920px;
+  max-width: 1000px;
 }
 
 .content-max--contact {
@@ -2348,6 +2390,108 @@ html.cursor-hover .cursor-inner {
 /* The <main> element itself was still receiving hits (only * targeted descendants). */
 main[data-portfolio-shell] {
   pointer-events: none !important;
+}
+
+/* ═══════════════════════════════════════════
+   MAGIC UI — Component Animations
+   ═══════════════════════════════════════════ */
+
+/* --- Meteor Streaks --- */
+@keyframes meteor {
+  0% {
+    opacity: 0;
+    transform: rotate(-45deg) translateX(0);
+  }
+  5% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(-45deg) translateX(-800px);
+  }
+}
+
+/* --- Shimmer Button Sweep --- */
+@keyframes shimmer-sweep {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.shimmer-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Border Beam Rotation --- */
+@keyframes border-beam-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Orbit Ring --- */
+@keyframes orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- CSS Marquee (TechMarquee) --- */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.marquee-row {
+  display: flex;
+  width: max-content;
+}
+
+.marquee-row:hover {
+  animation-play-state: paused !important;
+}
+
+/* --- Grid Pattern Pulse --- */
+@keyframes grid-pulse {
+  0%, 100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* --- Number Ticker digit columns inherit font from parent --- */
+.number-ticker {
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
 }
 
 /* Top navbar sits above the canvas; blur strip must not steal planet clicks. */

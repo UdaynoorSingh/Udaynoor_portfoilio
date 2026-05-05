@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import BlackHole from '../components/BlackHole'
+import ParticleField from '../components/ParticleField'
+import BorderBeam from '../components/BorderBeam'
+import TextReveal from '../components/TextReveal'
 import { getCsrfToken } from '../utils/csrf'
 
 const links = [
@@ -89,6 +92,9 @@ export default function ContactSection() {
 
   return (
     <section id="contact" className="relative w-full overflow-hidden" style={{ zIndex: 1, minHeight: '100vh', display: 'flex', alignItems: 'center' }} ref={ref}>
+      {/* Particle field behind everything */}
+      <ParticleField count={60} />
+
       {blackHoleOn ? <BlackHole /> : (
         <div className="absolute inset-0 z-0 bg-black pointer-events-none" aria-hidden />
       )}
@@ -103,25 +109,22 @@ export default function ContactSection() {
             transition={{ duration: 0.6 }}
           >
             <span className="w-8 h-[1px] bg-[var(--color-accent-secondary)] block"></span>
-            <span className="font-mono text-[0.68rem] tracking-[0.22em] text-[var(--color-accent-secondary)]">
+            <span className="subheading" style={{ color: 'var(--color-accent-secondary)' }}>
               06 — TERMINAL
             </span>
             <span className="w-8 h-[1px] bg-[var(--color-accent-secondary)] block"></span>
           </motion.div>
 
-          <motion.h2
-            className="font-bebas text-stroke hover:text-white transition-all duration-500"
-            style={{ fontSize: 'clamp(4rem, 9vw, 8rem)', lineHeight: 0.85 }}
-            initial={{ opacity: 0, y: 30 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          <TextReveal
+            as="h2"
+            className="heading-2 text-stroke hover:text-white transition-all duration-500"
+            style={{ justifyContent: 'center' }}
           >
             LET'S CONNECT
-          </motion.h2>
+          </TextReveal>
 
           <motion.p
-            className="font-dm mx-auto mt-10 max-w-lg"
-            style={{ color: 'var(--color-text-muted)', fontSize: '1.05rem', fontWeight: 400, lineHeight: 1.75 }}
+            className="body-text mx-auto mt-10 max-w-lg"
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
             transition={{ delay: 0.4 }}
@@ -129,47 +132,49 @@ export default function ContactSection() {
             I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
           </motion.p>
 
-          {/* Terminal */}
-          <motion.div
-            className="glass-card mx-auto mt-12 interactive hover:scale-[1.02] transition-transform duration-500"
-            style={{ maxWidth: '640px', textAlign: 'left', padding: '28px clamp(20px,4vw,32px)', borderRadius: '14px', background: 'rgba(6, 8, 16, 0.82)' }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.5, duration: 0.6 }}
-          >
-            {/* Terminal header — black hole toggle lives here (Contact section only) */}
-            <div
-              className="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4"
-              style={{ borderBottom: '1px solid rgba(255,255,255,0.12)' }}
+          {/* Terminal with BorderBeam */}
+          <BorderBeam borderRadius="14px" duration="4s">
+            <motion.div
+              className="glass-card mx-auto mt-12 interactive hover:scale-[1.02] transition-transform duration-500"
+              style={{ maxWidth: '640px', textAlign: 'left', padding: '28px clamp(20px,4vw,32px)', borderRadius: '14px', background: 'rgba(6, 8, 16, 0.82)' }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.5, duration: 0.6 }}
             >
-              <div className="flex min-w-0 items-center gap-2">
-                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f56' }} />
-                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
-                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#27c93f' }} />
-                <span className="font-mono ml-1 truncate md:ml-3" style={{ fontSize: '0.65rem', letterSpacing: '3px', color: 'var(--color-text-muted)' }}>
-                  UDAYNOOR@SYSTEM ~ $
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setBlackHoleOn((v) => !v)}
-                className="shrink-0 rounded border border-white/20 bg-white/[0.06] px-3 py-1.5 font-mono text-[0.6rem] tracking-widest text-white/80 transition-colors hover:border-[var(--color-accent)]/50 hover:text-[var(--color-accent)] interactive"
-                aria-pressed={blackHoleOn}
+              {/* Terminal header — black hole toggle lives here (Contact section only) */}
+              <div
+                className="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4"
+                style={{ borderBottom: '1px solid rgba(255,255,255,0.12)' }}
               >
-                {blackHoleOn ? 'Black hole: ON' : 'Black hole: OFF'}
-              </button>
-            </div>
+                <div className="flex min-w-0 items-center gap-2">
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f56' }} />
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#27c93f' }} />
+                  <span className="font-mono ml-1 truncate md:ml-3" style={{ fontSize: '0.65rem', letterSpacing: '3px', color: 'var(--color-text-muted)' }}>
+                    UDAYNOOR@SYSTEM ~ $
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setBlackHoleOn((v) => !v)}
+                  className="shrink-0 rounded border border-white/20 bg-white/[0.06] px-3 py-1.5 font-mono text-[0.6rem] tracking-widest text-white/80 transition-colors hover:border-[var(--color-accent)]/50 hover:text-[var(--color-accent)] interactive"
+                  aria-pressed={blackHoleOn}
+                >
+                  {blackHoleOn ? 'Black hole: ON' : 'Black hole: OFF'}
+                </button>
+              </div>
 
-            {links.map((link, i) => (
-              <TypewriterLine
-                key={link.prefix}
-                text={link.label}
-                prefix={link.prefix}
-                href={link.href}
-                delay={inView ? 600 + i * 800 : 99999}
-              />
-            ))}
-          </motion.div>
+              {links.map((link, i) => (
+                <TypewriterLine
+                  key={link.prefix}
+                  text={link.label}
+                  prefix={link.prefix}
+                  href={link.href}
+                  delay={inView ? 600 + i * 800 : 99999}
+                />
+              ))}
+            </motion.div>
+          </BorderBeam>
 
           <motion.form
             onSubmit={handleContactSubmit}

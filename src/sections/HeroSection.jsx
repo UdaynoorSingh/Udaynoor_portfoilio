@@ -1,42 +1,12 @@
-import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import HeroMercury from '../components/HeroMercury'
 import MagneticButton from '../components/MagneticButton'
+import Meteors from '../components/Meteors'
+import WordRotate from '../components/WordRotate'
+import ShimmerButton from '../components/ShimmerButton'
+import GridPattern from '../components/GridPattern'
 
 const roles = ['Full-Stack Engineer', 'Creative Technologist', '3D Web Developer']
-
-function Typewriter() {
-  const [roleIdx, setRoleIdx] = useState(0)
-  const [text, setText] = useState('')
-  const [isDeleting, setIsDeleting] = useState(false)
-
-  useEffect(() => {
-    const current = roles[roleIdx]
-    let timeout
-
-    if (!isDeleting && text === current) {
-      timeout = setTimeout(() => setIsDeleting(true), 2500)
-    } else if (isDeleting && text === '') {
-      timeout = setTimeout(() => {
-        setIsDeleting(false)
-        setRoleIdx((prev) => (prev + 1) % roles.length)
-      }, 200)
-    } else {
-      timeout = setTimeout(() => {
-        setText(isDeleting ? current.substring(0, text.length - 1) : current.substring(0, text.length + 1))
-      }, isDeleting ? 30 : 60)
-    }
-
-    return () => clearTimeout(timeout)
-  }, [text, isDeleting, roleIdx])
-
-  return (
-    <span className="font-mono" style={{ color: 'var(--color-accent)', fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)', letterSpacing: '4px' }}>
-      {text}
-      <span style={{ animation: 'blink 1s infinite', color: 'var(--color-accent)' }}>_</span>
-    </span>
-  )
-}
 
 const containerVariants = {
   hidden: {},
@@ -77,25 +47,33 @@ function ScrollIndicator() {
 
 export default function HeroSection() {
   return (
-    <section id="hero" className="hero-shell relative flex items-center justify-center overflow-hidden" style={{ zIndex: 1, minHeight: '100vh', perspective: '1000px' }}>
-      <div className="hero-grid-overlay" />
-      <div className="hero-radial-one" />
-      <div className="hero-radial-two" />
+    <section id="hero" className="hero-shell relative flex items-center justify-center overflow-hidden min-h-screen" style={{ zIndex: 1, perspective: '1000px' }}>
+      {/* Background layers */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <GridPattern />
+        <Meteors count={16} />
+        <div className="hero-radial-one" />
+        <div className="hero-radial-two" />
+      </div>
 
-      <div className="content-max grid w-full grid-cols-1 xl:grid-cols-5 items-center gap-12 px-4 md:px-6" style={{ paddingTop: 'clamp(96px, 14vh, 140px)', paddingBottom: 'clamp(72px, 10vh, 100px)' }}>
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="xl:col-span-3 z-10 relative">
+      <div className="content-max section-padding grid w-full grid-cols-1 lg:grid-cols-12 items-center gap-12 z-10 relative">
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="lg:col-span-7 z-10 relative">
           <motion.div variants={itemVariants} className="flex items-center gap-4 mb-8">
-            <span className="w-8 h-[1px] bg-white/30 block" />
-            <span className="font-mono text-xs uppercase tracking-[0.28em] text-white/65">Orbital Portfolio Interface</span>
+            <span className="w-8 h-[1px] bg-[var(--color-accent)] block" />
+            <span className="subheading text-white/65">Orbital Portfolio Interface</span>
           </motion.div>
 
-          <motion.h1 variants={itemVariants} className="font-bebas leading-[0.85] select-none hero-title" style={{ fontSize: 'clamp(4.2rem, 10vw, 11rem)' }}>
+          <motion.h1 variants={itemVariants} className="heading-1 select-none hero-title">
             <span className="block interactive-text fx-shimmer">UDAYNOOR</span>
             <span className="block text-stroke interactive-text hero-stroke">SINGH</span>
           </motion.h1>
 
           <motion.div variants={itemVariants} className="mt-8 mb-12 h-[40px]">
-            <Typewriter />
+            <WordRotate
+              words={roles}
+              className="font-mono"
+              style={{ color: 'var(--color-accent)', fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)', letterSpacing: '4px' }}
+            />
           </motion.div>
 
           <motion.div variants={itemVariants} className="inline-flex items-center gap-6 px-6 py-3 glass-card rounded-full interactive hero-chip">
@@ -116,6 +94,17 @@ export default function HeroSection() {
                 textDecoration: 'none',
               }}
             >
+              <ShimmerButton
+                as="span"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'transparent',
+                  padding: 0,
+                }}
+              >
+                <span />
+              </ShimmerButton>
               <span className="relative z-10 group-hover:text-white transition-colors duration-300">View Projects</span>
               <div className="absolute inset-0 bg-[var(--color-accent)] transform scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100 z-0" />
             </MagneticButton>
@@ -131,6 +120,18 @@ export default function HeroSection() {
                 textDecoration: 'none',
               }}
             >
+              <ShimmerButton
+                as="span"
+                shimmerColor="rgba(0,229,255,0.15)"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'transparent',
+                  padding: 0,
+                }}
+              >
+                <span />
+              </ShimmerButton>
               <span className="relative z-10">Contact Me</span>
               <div className="absolute inset-0 bg-white/5 transform scale-y-0 origin-bottom transition-transform duration-300 ease-out group-hover:scale-y-100 z-0" />
             </MagneticButton>
@@ -141,7 +142,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.5, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="hidden xl:block xl:col-span-2 relative hero-orb-shell"
+          className="hidden lg:block lg:col-span-5 relative hero-orb-shell"
           style={{ height: '70vh', minHeight: '500px' }}
         >
           <div className="absolute top-1/2 left-1/2 w-[120%] h-[120%] border border-white/8 rounded-full transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" />

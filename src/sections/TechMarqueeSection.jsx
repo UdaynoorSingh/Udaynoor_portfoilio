@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useMemo, useState } from 'react'
 
 /** Fallback cycles when API is unreachable — duplicated client-side for seamless loop (same visual length as before). */
 const FALLBACK_BASE_ROW1 = [
@@ -18,27 +17,26 @@ function doubleCycle(base) {
   return [...base, ...base]
 }
 
-function MarqueeRow({ items, direction = 1, speed = 15 }) {
-  const containerRef = useRef(null)
-  
-  // Create an infinite animation loop
+function MarqueeRow({ items, direction = 1, speed = 25 }) {
   return (
-    <div ref={containerRef} className="flex whitespace-nowrap overflow-hidden py-4">
-      <motion.div
-        className="flex gap-12 items-center"
-        animate={{ x: direction > 0 ? ['0%', '-50%'] : ['-50%', '0%'] }}
-        transition={{ repeat: Infinity, ease: 'linear', duration: speed }}
+    <div className="flex whitespace-nowrap overflow-hidden py-4">
+      <div
+        className="marquee-row"
+        style={{
+          gap: '3rem',
+          alignItems: 'center',
+          animation: `${direction > 0 ? 'marquee' : 'marquee-reverse'} ${speed}s linear infinite`,
+        }}
       >
         {items.map((item, i) => (
           <span
             key={`${item}-${i}`}
-            className="font-bebas text-stroke hover:text-[var(--color-accent)] transition-colors duration-300 interactive cursor-default"
-            style={{ fontSize: 'clamp(4rem, 8vw, 7rem)', lineHeight: 0.9 }}
+            className="heading-2 shrink-0 text-stroke hover:text-[var(--color-accent)] transition-colors duration-300 interactive cursor-default"
           >
             {item}
           </span>
         ))}
-      </motion.div>
+      </div>
     </div>
   )
 }

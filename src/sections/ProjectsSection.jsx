@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
 import TiltCard from '../components/TiltCard'
 import MagneticButton from '../components/MagneticButton'
+import DotPattern from '../components/DotPattern'
+import TextReveal from '../components/TextReveal'
 
 const defaultProjects = [
   {
@@ -82,10 +84,10 @@ function ProjectCard({ project, index }) {
             <span className="font-mono text-white/45 text-xs tabular-nums">0{index + 1}</span>
           </div>
 
-          <h3 className="font-bebas text-stroke hover:text-white transition-all duration-300" style={{ fontSize: '3rem', lineHeight: 1.0 }}>
+          <h3 className="heading-3 text-stroke hover:text-white transition-all duration-300">
             {project.title}
           </h3>
-          <p className="font-dm mt-4" style={{ color: 'var(--color-text-muted)', fontWeight: 400, fontSize: '0.98rem', lineHeight: 1.75 }}>
+          <p className="body-text mt-4">
             {project.description}
           </p>
 
@@ -159,6 +161,9 @@ export default function ProjectsSection() {
 
   return (
     <section id="projects" className="section-padding relative" style={{ zIndex: 1 }} ref={ref}>
+      {/* Dot pattern background */}
+      <DotPattern />
+
       <div className="content-max">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
@@ -170,20 +175,17 @@ export default function ProjectsSection() {
               transition={{ duration: 0.6 }}
             >
               <span className="w-8 h-[1px] bg-[var(--color-accent)] block"></span>
-              <span className="font-mono text-[0.68rem] tracking-[0.22em] text-[var(--color-accent)]">
+              <span className="subheading">
                 03 — DIGITAL ARCHIVE
               </span>
             </motion.div>
 
-            <motion.h2
-              className="font-bebas select-none text-stroke hover:text-white transition-all duration-500"
-              style={{ fontSize: 'clamp(4rem, 9vw, 8rem)', lineHeight: 0.85 }}
-              initial={{ opacity: 0, y: 50 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            <TextReveal
+              as="h2"
+              className="heading-2 select-none text-stroke hover:text-white transition-all duration-500"
             >
               SELECTED WORK
-            </motion.h2>
+            </TextReveal>
           </div>
 
           <motion.div
@@ -192,7 +194,7 @@ export default function ProjectsSection() {
             transition={{ delay: 0.4 }}
             className="hidden md:block max-w-xs text-right"
           >
-            <p className="font-dm text-sm font-normal text-white/65 leading-relaxed">
+            <p className="body-text leading-relaxed">
               A collection of digital experiences blending robust engineering with cinematic aesthetics.
             </p>
           </motion.div>

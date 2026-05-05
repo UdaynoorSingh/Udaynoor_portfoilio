@@ -1,6 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion, useMotionValue, useSpring, useReducedMotion } from 'framer-motion'
 import gsap from 'gsap'
+
+/* ──────────────────────────────────────────────
+   INTERACTIVE ELEMENT DETECTION
+   ────────────────────────────────────────────── */
 
 const INTERACTIVE_SELECTOR =
   'a, button, input, textarea, select, [role="button"], .interactive, .glass-card, .magnetic, .tilt-card, summary, label[for]'
@@ -17,13 +21,13 @@ const TYPE_LABELS = {
 }
 
 const MAGNET_STRENGTH = {
-  button: 0.26,
-  field: 0.14,
-  link: 0.2,
-  external: 0.2,
-  card: 0.11,
-  text: 0.08,
-  media: 0.12,
+  button: 0.3,
+  field: 0.16,
+  link: 0.24,
+  external: 0.24,
+  card: 0.14,
+  text: 0.1,
+  media: 0.14,
   default: 0,
 }
 
@@ -65,56 +69,74 @@ function resolveCursor(target) {
   return { interactive, type, label }
 }
 
+/* ──────────────────────────────────────────────
+   CURSOR STYLE STATES
+   ────────────────────────────────────────────── */
+
 const cursorStyles = {
   default: {
-    outer: { width: 52, height: 52, borderColor: 'rgba(0, 229, 255, 0.4)' },
-    inner: { width: 12, height: 12, background: 'white' },
+    outer: { width: 48, height: 48, borderColor: 'rgba(0, 229, 255, 0.35)' },
+    inner: { width: 10, height: 10, background: 'white' },
   },
   link: {
-    outer: { width: 72, height: 72, borderColor: 'rgba(0, 229, 255, 0.75)' },
+    outer: { width: 72, height: 72, borderColor: 'rgba(0, 229, 255, 0.7)' },
     inner: {
-      width: 40,
-      height: 40,
-      background: 'radial-gradient(circle, rgba(0,229,255,0.7), rgba(0,229,255,0.15))',
+      width: 38,
+      height: 38,
+      background: 'radial-gradient(circle, rgba(0,229,255,0.65), rgba(0,229,255,0.12))',
     },
   },
   button: {
-    outer: { width: 76, height: 76, borderColor: 'rgba(180, 100, 255, 0.7)', borderWidth: '2.5px' },
+    outer: { width: 78, height: 78, borderColor: 'rgba(180, 100, 255, 0.65)', borderWidth: '2.5px' },
     inner: {
-      width: 36,
-      height: 36,
-      background: 'radial-gradient(circle, rgba(180,100,255,0.85), rgba(180,100,255,0.25))',
+      width: 34,
+      height: 34,
+      background: 'radial-gradient(circle, rgba(180,100,255,0.8), rgba(180,100,255,0.2))',
     },
   },
   text: {
-    outer: { width: 96, height: 30, borderColor: 'rgba(255,255,255,0.38)', borderRadius: '15px' },
+    outer: { width: 96, height: 28, borderColor: 'rgba(255,255,255,0.35)', borderRadius: '14px' },
     inner: { width: 0, height: 0, background: 'transparent' },
   },
   card: {
-    outer: { width: 68, height: 68, borderColor: 'rgba(0,229,255,0.6)', borderStyle: 'dashed' },
-    inner: { width: 11, height: 11, background: 'rgba(0,229,255,0.95)' },
+    outer: { width: 66, height: 66, borderColor: 'rgba(0,229,255,0.55)', borderStyle: 'dashed' },
+    inner: { width: 10, height: 10, background: 'rgba(0,229,255,0.9)' },
   },
   external: {
-    outer: { width: 80, height: 80, borderColor: 'rgba(0,255,150,0.6)' },
+    outer: { width: 80, height: 80, borderColor: 'rgba(0,255,150,0.55)' },
     inner: {
-      width: 46,
-      height: 46,
-      background: 'radial-gradient(circle, rgba(0,255,150,0.65), transparent)',
+      width: 44,
+      height: 44,
+      background: 'radial-gradient(circle, rgba(0,255,150,0.6), transparent)',
     },
   },
   media: {
-    outer: { width: 88, height: 88, borderColor: 'rgba(255,200,100,0.58)' },
+    outer: { width: 86, height: 86, borderColor: 'rgba(255,200,100,0.5)' },
     inner: {
-      width: 52,
-      height: 52,
-      background: 'radial-gradient(circle, rgba(255,200,100,0.55), transparent)',
+      width: 50,
+      height: 50,
+      background: 'radial-gradient(circle, rgba(255,200,100,0.5), transparent)',
     },
   },
   field: {
-    outer: { width: 66, height: 66, borderColor: 'rgba(255, 190, 120, 0.55)' },
-    inner: { width: 7, height: 7, background: 'rgba(255, 210, 150, 0.95)' },
+    outer: { width: 64, height: 64, borderColor: 'rgba(255, 190, 120, 0.5)' },
+    inner: { width: 6, height: 6, background: 'rgba(255, 210, 150, 0.9)' },
   },
 }
+
+/* ──────────────────────────────────────────────
+   CONFETTI COLORS (Magic UI Cool-Mode Inspired)
+   ────────────────────────────────────────────── */
+
+const CONFETTI_PALETTE = [
+  '#00e5ff', '#7b2cbf', '#ff6b9d', '#00ff96',
+  '#ffd700', '#ff4757', '#70a1ff', '#a29bfe',
+  '#fd79a8', '#00cec9', '#e056fd', '#f9ca24',
+]
+
+/* ──────────────────────────────────────────────
+   MAIN COMPONENT
+   ────────────────────────────────────────────── */
 
 export default function CursorFX() {
   const canvasRef = useRef(null)
@@ -125,6 +147,11 @@ export default function CursorFX() {
   const wasHoveringRef = useRef(false)
   const isHoveringRef = useRef(false)
   const tiltRef = useRef(0)
+  const velRef = useRef({ x: 0, y: 0, speed: 0 })
+  const prevMouseRef = useRef({ x: -100, y: -100 })
+  const trailRef = useRef([])
+  const confettiRef = useRef([])
+  const hueRef = useRef(190)
 
   const reducedMotion = useReducedMotion()
   const [pointerFine, setPointerFine] = useState(() =>
@@ -135,13 +162,14 @@ export default function CursorFX() {
   const [isVisible, setIsVisible] = useState(false)
   const [cursorType, setCursorType] = useState('default')
   const [hoverLabel, setHoverLabel] = useState('')
+  const [isClicking, setIsClicking] = useState(false)
 
   const targetX = useMotionValue(-100)
   const targetY = useMotionValue(-100)
-  const dotX = useSpring(targetX, { stiffness: 520, damping: 34, mass: 0.85 })
-  const dotY = useSpring(targetY, { stiffness: 520, damping: 34, mass: 0.85 })
-  const ringX = useSpring(dotX, { stiffness: 90, damping: 20, mass: 0.9 })
-  const ringY = useSpring(dotY, { stiffness: 90, damping: 20, mass: 0.9 })
+  const dotX = useSpring(targetX, { stiffness: 550, damping: 32, mass: 0.8 })
+  const dotY = useSpring(targetY, { stiffness: 550, damping: 32, mass: 0.8 })
+  const ringX = useSpring(dotX, { stiffness: 85, damping: 18, mass: 0.95 })
+  const ringY = useSpring(dotY, { stiffness: 85, damping: 18, mass: 0.95 })
   const ringTilt = useSpring(0, { stiffness: 200, damping: 24 })
 
   useEffect(() => {
@@ -163,30 +191,59 @@ export default function CursorFX() {
 
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
+    if (!canvas || !ctx) return
 
     let particles = []
     let animationFrameId
     let mouse = { x: -100, y: -100 }
 
     const resizeCanvas = () => {
-      if (!canvas) return
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
     }
 
-    const pushParticle = (x, y, kind = 'trail') => {
-      const fast = kind === 'burst'
-      const count = fast ? 1 : 1
+    /* ─── Trail particle ─── */
+    const pushTrailParticle = (x, y) => {
+      // Disabled in favor of FluidCursor
+    }
+
+    /* ─── Magic UI Cool-Mode confetti burst ─── */
+    const spawnConfetti = (x, y, count = 22) => {
       for (let i = 0; i < count; i++) {
-        particles.push({
-          x,
-          y,
-          vx: (Math.random() - 0.5) * (fast ? 7 : 2.8),
-          vy: (Math.random() - 0.5) * (fast ? 7 : 2.8),
-          size: Math.random() * (fast ? 4.5 : 3) + 1,
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5
+        const speed = Math.random() * 8 + 4
+        const color = CONFETTI_PALETTE[Math.floor(Math.random() * CONFETTI_PALETTE.length)]
+        const size = Math.random() * 8 + 4
+        const shape = Math.random() > 0.5 ? 'circle' : 'rect'
+        confettiRef.current.push({
+          x, y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - Math.random() * 3,
+          size,
           life: 1,
-          decay: Math.random() * (fast ? 0.032 : 0.018) + (fast ? 0.018 : 0.01),
-          hue: fast ? 200 + Math.random() * 110 : 175 + Math.random() * 85,
+          decay: Math.random() * 0.012 + 0.006,
+          color,
+          shape,
+          spin: Math.random() * 360,
+          spinSpeed: (Math.random() - 0.5) * 18,
+          gravity: 0.12 + Math.random() * 0.08,
+        })
+      }
+    }
+
+    /* ─── Hover burst ─── */
+    const pushHoverBurst = (x, y) => {
+      for (let i = 0; i < 14; i++) {
+        const angle = (Math.PI * 2 * i) / 14
+        const speed = Math.random() * 4 + 2
+        trailRef.current.push({
+          x, y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: Math.random() * 3.5 + 1.5,
+          life: 1,
+          decay: Math.random() * 0.025 + 0.012,
+          hue: 190 + Math.random() * 80,
         })
       }
     }
@@ -201,7 +258,7 @@ export default function CursorFX() {
       setHoverLabel(label)
 
       if (nowHover && !wasHoveringRef.current) {
-        for (let i = 0; i < 18; i++) pushParticle(mouse.x, mouse.y, 'burst')
+        pushHoverBurst(mouse.x, mouse.y)
       }
       wasHoveringRef.current = nowHover
       return { interactive, type }
@@ -209,12 +266,20 @@ export default function CursorFX() {
 
     const moveCursor = (e) => {
       setIsVisible(true)
-      mouse = { x: e.clientX, y: e.clientY }
+      const dx = e.clientX - prevMouseRef.current.x
+      const dy = e.clientY - prevMouseRef.current.y
+      const speed = Math.sqrt(dx * dx + dy * dy)
+      velRef.current = { x: dx, y: dy, speed }
+      prevMouseRef.current = { x: e.clientX, y: e.clientY }
 
+      // Shift hue based on velocity for aurora effect
+      hueRef.current = (hueRef.current + speed * 0.3) % 360
+
+      mouse = { x: e.clientX, y: e.clientY }
       const { interactive, type } = applyHoverFromTarget(e.target)
 
-      tiltRef.current = tiltRef.current * 0.82 + e.movementX * 0.35
-      ringTilt.set(Math.max(-14, Math.min(14, tiltRef.current)))
+      tiltRef.current = tiltRef.current * 0.8 + e.movementX * 0.4
+      ringTilt.set(Math.max(-16, Math.min(16, tiltRef.current)))
 
       const mag = MAGNET_STRENGTH[type] ?? MAGNET_STRENGTH.default
 
@@ -231,8 +296,12 @@ export default function CursorFX() {
       targetX.set(tx)
       targetY.set(ty)
 
-      pushParticle(e.clientX, e.clientY, 'trail')
-      if (Math.random() > 0.55) pushParticle(e.clientX, e.clientY, 'trail')
+      // Trail — spawn rate increases with speed
+      if (speed > 1.5) {
+        pushTrailParticle(e.clientX, e.clientY)
+        if (speed > 8) pushTrailParticle(e.clientX, e.clientY)
+        if (speed > 18) pushTrailParticle(e.clientX, e.clientY)
+      }
     }
 
     const checkHover = (e) => applyHoverFromTarget(e.target)
@@ -248,68 +317,102 @@ export default function CursorFX() {
       ringTilt.set(0)
     }
 
-    const handleClick = (e) => {
+    const handleMouseDown = (e) => {
+      setIsClicking(true)
+      // Cool-mode confetti on click
+      spawnConfetti(e.clientX, e.clientY, 18)
+      clickRipplesRef.current.push({ x: e.clientX, y: e.clientY, t: performance.now() })
       if (magnetRef.current) {
         gsap.to(magnetRef.current, {
-          scale: 1.85,
-          duration: 0.12,
+          scale: 1.9,
+          duration: 0.1,
           ease: 'power2.out',
           yoyo: true,
           repeat: 1,
         })
       }
-      clickRipplesRef.current.push({ x: e.clientX, y: e.clientY, t: performance.now() })
-      for (let i = 0; i < 14; i++) pushParticle(e.clientX, e.clientY, 'burst')
     }
 
+    const handleMouseUp = () => {
+      setIsClicking(false)
+    }
+
+    /* ═══════════════════════════════════════════
+       RENDER LOOP
+       ═══════════════════════════════════════════ */
     const renderEffects = () => {
-      if (canvas && ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-        const hovering = isHoveringRef.current
-        const spotlightR = hovering ? 210 : 160
-        const spotlight = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, spotlightR)
-        spotlight.addColorStop(0, hovering ? 'rgba(120, 200, 255, 0.18)' : 'rgba(80,220,255,0.14)')
-        spotlight.addColorStop(0.55, hovering ? 'rgba(180, 120, 255, 0.07)' : 'rgba(80,220,255,0.05)')
-        spotlight.addColorStop(1, 'rgba(80,220,255,0)')
-        ctx.beginPath()
-        ctx.arc(mouse.x, mouse.y, spotlightR, 0, Math.PI * 2)
-        ctx.fillStyle = spotlight
-        ctx.fill()
+      const hovering = isHoveringRef.current
+      const vel = velRef.current
 
-        for (let i = 0; i < particles.length; i++) {
-          const p = particles[i]
-          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * p.life * 4)
-          grad.addColorStop(0, `hsla(${p.hue}, 100%, 70%, ${p.life})`)
-          grad.addColorStop(1, `hsla(${p.hue}, 80%, 40%, 0)`)
+      /* ─── Aurora spotlight (disabled in favor of FluidCursor) ─── */
+      /* ─── Fluid glow trail (disabled in favor of FluidCursor) ─── */
 
+      /* ─── Cool-mode confetti particles ─── */
+      const confetti = confettiRef.current
+      for (let i = 0; i < confetti.length; i++) {
+        const c = confetti[i]
+        ctx.save()
+        ctx.translate(c.x, c.y)
+        ctx.rotate((c.spin * Math.PI) / 180)
+        ctx.globalAlpha = c.life
+
+        if (c.shape === 'circle') {
           ctx.beginPath()
-          ctx.arc(p.x, p.y, p.size * p.life * 2, 0, Math.PI * 2)
-          ctx.fillStyle = grad
+          ctx.arc(0, 0, c.size * c.life, 0, Math.PI * 2)
+          ctx.fillStyle = c.color
           ctx.fill()
-
-          p.x += p.vx
-          p.y += p.vy
-          p.vx *= 0.96
-          p.vy *= 0.96
-          p.life -= p.decay
-        }
-        particles = particles.filter((p) => p.life > 0)
-
-        const now = performance.now()
-        clickRipplesRef.current = clickRipplesRef.current.filter((r) => now - r.t < 1100)
-        clickRipplesRef.current.forEach((r) => {
-          const age = (now - r.t) / 1100
-          const radius = 28 + age * 170
-          const opacity = 1 - age
-
+          // Glow
+          ctx.shadowBlur = 12
+          ctx.shadowColor = c.color
           ctx.beginPath()
-          ctx.arc(r.x, r.y, radius, 0, Math.PI * 2)
-          ctx.strokeStyle = `rgba(0,229,255, ${opacity * 0.52})`
-          ctx.lineWidth = 1.8
-          ctx.stroke()
-        })
+          ctx.arc(0, 0, c.size * c.life * 0.6, 0, Math.PI * 2)
+          ctx.fillStyle = c.color
+          ctx.fill()
+          ctx.shadowBlur = 0
+        } else {
+          const s = c.size * c.life
+          ctx.fillStyle = c.color
+          ctx.shadowBlur = 10
+          ctx.shadowColor = c.color
+          ctx.fillRect(-s / 2, -s / 2, s, s * 0.6)
+          ctx.shadowBlur = 0
+        }
+
+        ctx.restore()
+
+        c.x += c.vx
+        c.y += c.vy
+        c.vy += c.gravity
+        c.vx *= 0.98
+        c.spin += c.spinSpeed
+        c.life -= c.decay
       }
+      confettiRef.current = confetti.filter((c) => c.life > 0)
+
+      /* ─── Click ripple rings ─── */
+      const now = performance.now()
+      clickRipplesRef.current = clickRipplesRef.current.filter((r) => now - r.t < 1200)
+      clickRipplesRef.current.forEach((r) => {
+        const age = (now - r.t) / 1200
+        const radius = 20 + age * 180
+        const opacity = (1 - age) * 0.5
+        const hue = hueRef.current
+
+        // Double ring
+        ctx.beginPath()
+        ctx.arc(r.x, r.y, radius, 0, Math.PI * 2)
+        ctx.strokeStyle = `hsla(${hue}, 85%, 65%, ${opacity})`
+        ctx.lineWidth = 2 - age * 1.5
+        ctx.stroke()
+
+        ctx.beginPath()
+        ctx.arc(r.x, r.y, radius * 0.6, 0, Math.PI * 2)
+        ctx.strokeStyle = `hsla(${(hue + 90) % 360}, 75%, 60%, ${opacity * 0.6})`
+        ctx.lineWidth = 1.2
+        ctx.stroke()
+      })
 
       animationFrameId = requestAnimationFrame(renderEffects)
     }
@@ -318,7 +421,8 @@ export default function CursorFX() {
     window.addEventListener('mousemove', moveCursor)
     window.addEventListener('mouseover', checkHover)
     window.addEventListener('mouseleave', handleMouseLeave)
-    window.addEventListener('mousedown', handleClick)
+    window.addEventListener('mousedown', handleMouseDown)
+    window.addEventListener('mouseup', handleMouseUp)
 
     resizeCanvas()
     renderEffects()
@@ -328,7 +432,8 @@ export default function CursorFX() {
       window.removeEventListener('mousemove', moveCursor)
       window.removeEventListener('mouseover', checkHover)
       window.removeEventListener('mouseleave', handleMouseLeave)
-      window.removeEventListener('mousedown', handleClick)
+      window.removeEventListener('mousedown', handleMouseDown)
+      window.removeEventListener('mouseup', handleMouseUp)
       cancelAnimationFrame(animationFrameId)
     }
   }, [pointerFine, reducedMotion, targetX, targetY, ringTilt])
@@ -348,8 +453,49 @@ export default function CursorFX() {
       }}
       aria-hidden
     >
+      {/* Canvas for trail + confetti + spotlight + ripples */}
       <canvas ref={canvasRef} className="absolute inset-0" style={{ mixBlendMode: 'screen' }} />
 
+      {/* Outer rotating orbit ring */}
+      <motion.div
+        className="absolute top-0 left-0 z-[9996] will-change-transform"
+        style={{ x: ringX, y: ringY, translateX: '-50%', translateY: '-50%' }}
+        animate={{
+          width: style.outer.width * 1.44,
+          height: style.outer.height * 1.44,
+          rotate: 360,
+          scale: isHovering ? 1.15 : 1,
+        }}
+        transition={{
+          width: { type: 'spring', stiffness: 380, damping: 28 },
+          height: { type: 'spring', stiffness: 380, damping: 28 },
+          rotate: { duration: 7, repeat: Infinity, ease: 'linear' },
+          scale: { type: 'spring', stiffness: 260, damping: 22 },
+        }}
+      >
+        <div
+          className="h-full w-full rounded-full"
+          style={{
+            border: `1px solid rgba(180,100,255,${isHovering ? 0.3 : 0.15})`,
+            boxShadow: isHovering ? 'inset 0 0 22px rgba(180,100,255,0.1)' : 'none',
+          }}
+        />
+        {/* Orbit dot */}
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: 4,
+            height: 4,
+            top: -2,
+            left: '50%',
+            marginLeft: -2,
+            background: isHovering ? 'rgba(180,100,255,0.8)' : 'rgba(180,100,255,0.4)',
+            boxShadow: '0 0 8px rgba(180,100,255,0.6)',
+          }}
+        />
+      </motion.div>
+
+      {/* Main ring */}
       <motion.div
         ref={ringRef}
         className="absolute top-0 left-0 z-[9997] will-change-transform"
@@ -363,9 +509,9 @@ export default function CursorFX() {
         animate={{
           width: style.outer.width,
           height: style.outer.height,
-          scale: isHovering ? 1.06 : 1,
+          scale: isClicking ? 0.85 : isHovering ? 1.08 : 1,
         }}
-        transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+        transition={{ type: 'spring', stiffness: 420, damping: 26 }}
       >
         <div
           className="h-full w-full rounded-full"
@@ -374,36 +520,14 @@ export default function CursorFX() {
             borderRadius: style.outer.borderRadius || '50%',
             borderStyle: style.outer.borderStyle || 'solid',
             boxShadow: isHovering
-              ? '0 0 38px rgba(0,229,255,0.28), inset 0 0 26px rgba(0,229,255,0.1)'
-              : '0 0 20px rgba(0,229,255,0.12), inset 0 0 12px rgba(0,229,255,0.05)',
+              ? '0 0 38px rgba(0,229,255,0.25), inset 0 0 26px rgba(0,229,255,0.08)'
+              : '0 0 18px rgba(0,229,255,0.1), inset 0 0 10px rgba(0,229,255,0.04)',
+            transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
           }}
         />
       </motion.div>
 
-      <motion.div
-        className="absolute top-0 left-0 z-[9996] will-change-transform"
-        style={{ x: ringX, y: ringY, translateX: '-50%', translateY: '-50%' }}
-        animate={{
-          width: style.outer.width * 1.48,
-          height: style.outer.height * 1.48,
-          rotate: 360,
-          scale: isHovering ? 1.12 : 1,
-        }}
-        transition={{
-          width: { type: 'spring', stiffness: 380, damping: 28 },
-          height: { type: 'spring', stiffness: 380, damping: 28 },
-          rotate: { duration: 8, repeat: Infinity, ease: 'linear' },
-          scale: { type: 'spring', stiffness: 260, damping: 22 },
-        }}
-      >
-        <div
-          className="h-full w-full rounded-full border border-[rgba(180,100,255,0.22)]"
-          style={{
-            boxShadow: isHovering ? 'inset 0 0 22px rgba(180,100,255,0.12)' : 'none',
-          }}
-        />
-      </motion.div>
-
+      {/* Inner dot with pulse */}
       <motion.div
         ref={magnetRef}
         className="absolute top-0 left-0 z-[9999] flex items-center justify-center overflow-hidden rounded-full will-change-transform"
@@ -411,9 +535,9 @@ export default function CursorFX() {
         animate={{
           width: style.inner.width,
           height: style.inner.height,
-          scale: isHovering ? 1.1 : 1,
+          scale: isClicking ? 0.6 : isHovering ? 1.15 : 1,
         }}
-        transition={{ type: 'spring', stiffness: 520, damping: 32 }}
+        transition={{ type: 'spring', stiffness: 550, damping: 30 }}
       >
         <div
           className="h-full w-full rounded-full"
@@ -421,35 +545,37 @@ export default function CursorFX() {
             background: style.inner.background,
             boxShadow:
               cursorType !== 'default' && cursorType !== 'text'
-                ? '0 0 32px rgba(0,229,255,0.48), 0 0 64px rgba(180,100,255,0.22)'
-                : '0 0 12px rgba(255,255,255,0.45)',
+                ? '0 0 28px rgba(0,229,255,0.45), 0 0 56px rgba(180,100,255,0.18)'
+                : '0 0 10px rgba(255,255,255,0.4)',
           }}
         />
+        {/* Breathing pulse */}
         {cursorType !== 'default' && cursorType !== 'text' && (
           <motion.div
             className="pointer-events-none absolute inset-0 rounded-full"
-            animate={{ scale: [1, 1.22, 1], opacity: [0.4, 0.85, 0.4] }}
-            transition={{ duration: 1.35, repeat: Infinity }}
-            style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.38), transparent 72%)' }}
+            animate={{ scale: [1, 1.3, 1], opacity: [0.35, 0.8, 0.35] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.35), transparent 70%)' }}
           />
         )}
       </motion.div>
 
+      {/* Hover label tag */}
       {showHoverTag && tagText && (
         <motion.div
           className="absolute top-0 left-0 z-[10000] whitespace-nowrap font-mono uppercase will-change-transform"
-          style={{ x: dotX, y: dotY, translateX: '18px', translateY: '-120%' }}
-          initial={{ opacity: 0, filter: 'blur(6px)' }}
-          animate={{ opacity: 1, filter: 'blur(0px)' }}
-          transition={{ type: 'spring', stiffness: 420, damping: 28 }}
+          style={{ x: dotX, y: dotY, translateX: '16px', translateY: '-120%' }}
+          initial={{ opacity: 0, filter: 'blur(6px)', y: 4 }}
+          animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+          transition={{ type: 'spring', stiffness: 460, damping: 26 }}
         >
           <span
-            className="rounded-sm border border-white/15 bg-black/55 px-2 py-1 backdrop-blur-md"
+            className="rounded-sm border border-white/15 bg-black/60 px-2 py-1 backdrop-blur-md"
             style={{
-              fontSize: '0.58rem',
-              letterSpacing: '0.12em',
+              fontSize: '0.56rem',
+              letterSpacing: '0.13em',
               color: 'rgba(255,255,255,0.92)',
-              textShadow: '0 0 14px rgba(0,0,0,0.85), 0 0 18px rgba(0,229,255,0.4)',
+              textShadow: '0 0 14px rgba(0,0,0,0.85), 0 0 18px rgba(0,229,255,0.35)',
             }}
           >
             {tagText}

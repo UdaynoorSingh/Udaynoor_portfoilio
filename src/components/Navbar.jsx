@@ -40,7 +40,33 @@ function AmbientAudioToggle() {
   )
 }
 
-export default function Navbar({ usePlanetMatrixNav = true }) {
+function FluidCursorToggle({ isEnabled, onToggle }) {
+  if (!onToggle) return null
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="interactive ambient-nav-toggle"
+      aria-label={isEnabled ? 'Disable smoke cursor effect' : 'Enable smoke cursor effect'}
+      title={isEnabled ? 'Disable smoke effect' : 'Enable smoke effect'}
+    >
+      <span className="ambient-nav-toggle__icon" aria-hidden>
+        {isEnabled ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" />
+          </svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" />
+            <line x1="2" y1="2" x2="22" y2="22" />
+          </svg>
+        )}
+      </span>
+    </button>
+  )
+}
+
+export default function Navbar({ usePlanetMatrixNav = true, isFluidEnabled, onToggleFluid }) {
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('')
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -143,6 +169,7 @@ export default function Navbar({ usePlanetMatrixNav = true }) {
             3D NAV
           </span>
         )}
+        <FluidCursorToggle isEnabled={isFluidEnabled} onToggle={onToggleFluid} />
         <AmbientAudioToggle />
 
         {/* Mobile hamburger — hidden when using planet matrix nav */}
